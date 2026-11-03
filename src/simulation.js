@@ -41,7 +41,7 @@ function updateParticles(state, deltaTime) {
   state.particles = state.particles.filter((particle) => particle.life > 0);
 }
 
-function fireTowers(state, deltaTime, effects) {
+function fireTowers(state, deltaTime) {
   for (const tower of state.towers) {
     const definition = getTowerStats(tower);
     tower.cooldownRemaining -= deltaTime;
@@ -56,11 +56,10 @@ function fireTowers(state, deltaTime, effects) {
     state.projectiles.push(createProjectile(tower, target));
     tower.cooldownRemaining = definition.cooldown;
     tower.pulse = 0.15;
-    effects.push({ type: "tone", frequency: tower.type === "mage" ? 620 : tower.type === "stone" ? 210 : 390, duration: 0.045, wave: "triangle" });
   }
 }
 
-function damageEnemies(state, projectile, target) {
+function damageEnemies(state, projectile, target, effects) {
   const victims = projectile.splashRadius
     ? state.enemies.filter((enemy) => distanceBetween(enemy, target) <= projectile.splashRadius)
     : [target];
@@ -73,6 +72,7 @@ function damageEnemies(state, projectile, target) {
     state.enemies = state.enemies.filter((candidate) => candidate.id !== enemy.id);
     state.score += enemy.score;
     state.gold += enemy.reward;
+    effects.push({ type: "enemy-defeated" });
   }
 }
 
@@ -85,8 +85,7 @@ function updateProjectiles(state, deltaTime, effects) {
 
     const distance = distanceBetween(projectile, target);
     if (distance < projectile.speed * deltaTime + target.radius) {
-      damageEnemies(state, projectile, target);
-      effects.push({ type: "tone", frequency: projectile.towerType === "mage" ? 760 : 510, duration: 0.055 });
+      damageEnemies(state, projectile, target, effects);
       continue;
     }
 
@@ -104,7 +103,7 @@ function moveEnemies(state, deltaTime, effects) {
     state.enemies = state.enemies.filter((candidate) => candidate.id !== enemy.id);
     state.lives--;
     addBurst(state, enemy.x, enemy.y, "#e88477", 9);
-    effects.push({ type: "tone", frequency: 145, duration: 0.17, wave: "sawtooth" });
+    effects.push({ type: "life-lost" });
 
     if (state.lives <= 0) {
       state.lives = 0;
@@ -156,7 +155,7 @@ export function updateGame(state, deltaTime) {
     state.spawnClock = Math.max(0.44, 1.02 - state.wave * 0.025);
   }
 
-  fireTowers(state, scaledDelta, effects);
+  fireTowers(state, scaledDelta);
   moveEnemies(state, scaledDelta, effects);
   updateProjectiles(state, scaledDelta, effects);
   updateParticles(state, deltaTime);
@@ -180,7 +179,6 @@ export function updateGame(state, deltaTime) {
     state.wave++;
     state.intermissionRemaining = 8;
     effects.push({ type: "wave-cleared", wave: clearedWave, reward });
-    effects.push({ type: "tone", frequency: 690, duration: 0.22 });
   }
 
   return effects;

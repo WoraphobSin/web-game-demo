@@ -59,16 +59,16 @@
         <p class="aux-description">Difficulty changes the enemy waves, their strength, and the gold you earn.</p>
         <div class="difficulty-options" id="difficulty-options" role="group" aria-label="Choose difficulty">
           <button class="difficulty-option" data-difficulty="easy" type="button" aria-pressed="false">
-            <span class="difficulty-name">Easy</span><span class="difficulty-summary">Fewer, weaker foes · 280 starting gold · generous rewards</span>
+            <span class="difficulty-name">Easy</span>            <span class="difficulty-summary">Smaller, weaker waves · 240 starting gold · modest bonus rewards</span>
           </button>
           <button class="difficulty-option selected" data-difficulty="medium" type="button" aria-pressed="true">
-            <span class="difficulty-name">Medium</span><span class="difficulty-summary">Balanced waves · 220 starting gold · standard rewards</span>
+            <span class="difficulty-name">Medium</span>            <span class="difficulty-summary">Larger, tougher waves · 200 starting gold · reduced rewards</span>
           </button>
           <button class="difficulty-option" data-difficulty="hard" type="button" aria-pressed="false">
-            <span class="difficulty-name">Hard</span><span class="difficulty-summary">More, tougher foes · 180 starting gold · reduced rewards</span>
+            <span class="difficulty-name">Hard</span>            <span class="difficulty-summary">Large, fast waves · 160 starting gold · scarce rewards</span>
           </button>
           <button class="difficulty-option" data-difficulty="expert" type="button" aria-pressed="false">
-            <span class="difficulty-name">Expert</span><span class="difficulty-summary">Relentless, powerful waves · 150 starting gold · scarce rewards</span>
+            <span class="difficulty-name">Expert</span>            <span class="difficulty-summary">Overwhelming hordes · 130 starting gold · minimal rewards</span>
           </button>
         </div>
         <div class="aux-actions">
@@ -84,7 +84,7 @@
         <h1 id="settings-title">Settings</h1>
         <p class="aux-description">Tune the battlefield to your liking.</p>
         <label class="setting-row" for="settings-sound">
-          <span><strong>Sound effects</strong><small>Guardian magic and battle sounds</small></span>
+          <span><strong>Sound and music</strong><small>Atmospheric music and battle sounds</small></span>
           <input id="settings-sound" type="checkbox">
         </label>
         <label class="setting-row" for="settings-speed">
@@ -127,40 +127,32 @@
           <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
             <span id="sound-icon" aria-hidden="true">♫</span> Sound off
           </button>
+          <button class="primary-button header-control" id="wave-button" type="button"><span>▶</span> Begin Wave 1</button>
+          <button class="sound-toggle" id="speed-button" type="button"><span>»</span> Double Speed</button>
           <button class="sound-toggle" id="pause-button" type="button">Ⅱ Menu</button>
         </div>
       </header>
 
+      <section class="panel war-table-panel" aria-label="War table">
+        <div class="panel-heading"><span class="rune">◈</span> WAR TABLE</div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-icon heart">♥</span><span class="stat-label">LIVES</span><strong id="lives">20</strong></div>
+          <div class="stat"><span class="stat-icon coin">◉</span><span class="stat-label">GOLD</span><strong id="gold">220</strong></div>
+          <div class="stat"><span class="stat-icon score">✧</span><span class="stat-label">SCORE</span><strong id="score">0</strong></div>
+          <div class="stat"><span class="stat-icon time">⌛</span><span class="stat-label">TIME</span><strong id="timer">00:00</strong></div>
+          <div class="stat"><span class="stat-icon foes">♟</span><span class="stat-label">FOES</span><strong id="enemy-count">0</strong></div>
+        </div>
+        <div class="war-wave-meta">
+          <div class="wave-row">
+            <div><span class="stat-label">CURRENT WAVE</span><strong id="wave">1</strong></div>
+            <div class="wave-progress"><span id="wave-progress"></span></div>
+          </div>
+          <div class="deadline-row"><span id="deadline-label">WAVE DEADLINE</span><strong id="wave-deadline">--:--</strong></div>
+        </div>
+      </section>
+
       <section class="battle-layout" aria-label="Tower defense game">
-        <aside class="sidebar">
-          <div class="panel status-panel">
-            <div class="panel-heading"><span class="rune">◈</span> WAR TABLE</div>
-            <div class="stats-grid">
-              <div class="stat"><span class="stat-icon heart">♥</span><span class="stat-label">LIVES</span><strong id="lives">20</strong></div>
-              <div class="stat"><span class="stat-icon coin">◉</span><span class="stat-label">GOLD</span><strong id="gold">220</strong></div>
-              <div class="stat"><span class="stat-icon score">✧</span><span class="stat-label">SCORE</span><strong id="score">0</strong></div>
-              <div class="stat"><span class="stat-icon time">⌛</span><span class="stat-label">TIME</span><strong id="timer">00:00</strong></div>
-            </div>
-            <div class="wave-row">
-              <div><span class="stat-label">CURRENT WAVE</span><strong id="wave">1</strong></div>
-              <div class="wave-progress"><span id="wave-progress"></span></div>
-            </div>
-            <div class="deadline-row"><span id="deadline-label">WAVE DEADLINE</span><strong id="wave-deadline">--:--</strong></div>
-          </div>
-
-          <div class="panel command-panel">
-            <div class="panel-heading"><span class="rune">✦</span> COMMAND</div>
-            <button class="primary-button" id="wave-button" type="button"><span>▶</span> Begin Wave 1</button>
-            <button class="secondary-button" id="speed-button" type="button"><span>»</span> Double Speed</button>
-            <p class="command-tip">Clear each wave before its deadline. The next wave begins automatically after a short reprieve.</p>
-          </div>
-        </aside>
-
         <section class="arena-column">
-          <div class="arena-heading">
-            <div><span class="eyebrow">NORTHERN FRONTIER</span><h2>The Moonlit Pass</h2></div>
-            <span class="weather"><span class="weather-dot"></span> NIGHTFALL · <span id="enemy-count">0</span> FOES</span>
-          </div>
           <div class="arena-frame">
             <canvas id="game-canvas" width="960" height="528" aria-label="Game board. Select a guardian, then click an empty tile to place it."></canvas>
             <div class="arena-overlay" id="arena-overlay">
@@ -180,18 +172,18 @@
             <span class="footer-tip">Click an open tile to place · Select a guardian to upgrade · Right-click to cancel</span>
           </div>
         </section>
+
+        <section class="guardian-workshop panel" aria-label="Guardian workshop">
+          <div class="workshop-heading">
+            <div><div class="panel-heading"><span class="rune">⚒</span> GUARDIAN WORKSHOP</div><p class="panel-hint">Choose a guardian to place, or select one on the battlefield to upgrade it.</p></div>
+            <span class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</span>
+          </div>
+          <div class="workshop-content">
+            <div class="tower-list" id="tower-list"></div>
+            <section class="guardian-inspector" id="guardian-inspector" aria-live="polite" aria-label="Selected guardian details"></section>
+          </div>
+        </section>
       </section>
-      <section class="guardian-workshop panel" aria-label="Guardian workshop">
-        <div class="workshop-heading">
-          <div><div class="panel-heading"><span class="rune">⚒</span> GUARDIAN WORKSHOP</div><p class="panel-hint">Choose a guardian to place, or select one on the battlefield to upgrade it.</p></div>
-          <span class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</span>
-        </div>
-        <div class="workshop-content">
-          <div class="tower-list" id="tower-list"></div>
-          <section class="guardian-inspector" id="guardian-inspector" aria-live="polite" aria-label="Selected guardian details"></section>
-        </div>
-      </section>
-      <footer class="page-footer"><span>MYTHIC BASTION</span><span>THE OLD POWERS STILL WATCH</span><span>✦</span></footer>
       <div class="modal-backdrop" id="pause-modal" hidden>
         <section class="aux-card pause-card" aria-labelledby="pause-title">
           <p class="eyebrow">DEFENSE PAUSED</p>

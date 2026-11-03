@@ -59,7 +59,7 @@ function openSettings(returnScreen) {
 function toggleSound() {
   state.soundEnabled = !state.soundEnabled;
   ui.render(state);
-  audio.play(state, 520, 0.12);
+  audio.syncMusic(state);
 }
 
 function startWave() {
@@ -68,15 +68,14 @@ function startWave() {
   if (!state.started) {
     state.started = true;
     showToast("Wave 1 — The goblins approach!");
-    audio.play(state, 440, 0.15);
   } else if (state.running) {
     return;
   } else {
     showToast(`Wave ${state.wave} — Hold the pass!`);
-    audio.play(state, 440 + state.wave * 20, 0.15);
   }
 
   beginWave(state);
+  audio.syncMusic(state);
   ui.render(state);
 }
 
@@ -125,21 +124,25 @@ function placeTower(event) {
   const tower = createTower(state.selectedTower, column, row);
   state.towers.push(tower);
   state.selectedTowerId = tower.id;
-  audio.play(state, 320, 0.11, "triangle");
+  audio.syncMusic(state);
+  audio.playCue(state, "guardian-placed");
   ui.render(state);
 }
 
 function handleEffects(effects) {
   for (const effect of effects) {
-    if (effect.type === "tone") {
-      audio.play(state, effect.frequency, effect.duration, effect.wave);
-    } else if (effect.type === "wave-cleared") {
+    if (effect.type === "wave-cleared") {
       showToast(`Wave ${effect.wave} cleared! +${effect.reward} gold`);
     } else if (effect.type === "wave-started") {
       showToast(`Wave ${effect.wave} begins!`);
     } else if (effect.type === "wave-timeout") {
       showToast("The wave deadline has passed. The pass is lost.");
+    } else if (effect.type === "enemy-defeated") {
+      audio.playCue(state, effect.type);
+    } else if (effect.type === "life-lost") {
+      audio.playCue(state, effect.type);
     } else if (effect.type === "game-over") {
+      audio.syncMusic(state);
       ui.render(state);
     }
   }
@@ -151,6 +154,7 @@ function update(deltaTime) {
     if (state.toastRemaining <= 0) ui.hideToast();
   }
   handleEffects(updateGame(state, deltaTime));
+  audio.syncMusic(state);
   ui.render(state);
 }
 
@@ -196,7 +200,7 @@ document.querySelector("#guide-back-button").addEventListener("click", () => sho
 document.querySelector("#settings-sound").addEventListener("change", (event) => {
   state.soundEnabled = event.currentTarget.checked;
   ui.render(state);
-  audio.play(state, 520, 0.12);
+  audio.syncMusic(state);
 });
 document.querySelector("#settings-speed").addEventListener("change", (event) => {
   state.speed = event.currentTarget.checked ? 2 : 1;
@@ -250,6 +254,7 @@ function upgradeSelectedTower() {
 
   state.gold -= cost;
   tower.level++;
+  audio.playCue(state, "guardian-upgraded");
   ui.render(state);
   showToast(`${definition.name} upgraded to level ${tower.level}!`);
 }

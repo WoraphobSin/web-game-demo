@@ -1,0 +1,12 @@
+Battle Theme A
+Author: cynicmusic
+Source: https://opengameart.org/content/battle-theme-a
+License: CC0 1.0 Public Domain
+Local file: battle-theme-a.mp3
+
+Impact sounds
+Author: Kenney (www.kenney.nl)
+Source: https://kenney.nl/assets/impact-sounds
+License: CC0 1.0 Public Domain
+The original Kenney license text is included in KENNEY-LICENSE.txt.
+The files in this folder are selected variants from the Impact Sounds pack.

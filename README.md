@@ -22,14 +22,17 @@ Open [http://localhost:8765](http://localhost:8765) in a browser. Use a local se
 - `src/simulation.js` handles wave spawning, movement, targeting, attacks, damage, and rewards.
 - `src/renderer.js` draws the board and game entities on the canvas.
 - `src/ui.js` renders catalog-driven controls and game status.
-- `src/audio.js` provides optional sound effects.
+- `src/audio.js` plays optional background music and sound effects; audio remains off until enabled in the game or settings. Music pauses when gameplay is paused or over.
+- `assets/audio/` contains the CC0 music and sound effects. Sources and license details are in `ASSET-CREDITS.txt` and `KENNEY-LICENSE.txt`.
 - `src/main.js` connects input, simulation, rendering, UI, and audio.
 
 ## Menu flow
 
-The game opens on the landing page, then proceeds to the main menu. Choose **Play** to select Easy, Medium, Hard, or Expert before starting a new defense. Difficulty affects enemy wave size, health, speed, starting gold, gold earned from kills and cleared waves, and each wave's clear deadline. Waves start automatically after a short break; failing to clear a wave before its countdown ends loses the defense. From the main menu, you can also continue a paused defense, open settings, or read the field guide. The in-game menu pauses the simulation; settings opened from the pause menu return to the paused game.
+The game opens on the landing page, then proceeds to the main menu. Choose **Play** to select Easy, Medium, Hard, or Expert before starting a new defense. All four settings are tuned for a tougher challenge: enemy wave size, health, and speed increase, while starting gold, gold earned from kills and cleared waves, and each wave's clear deadline are reduced compared with the previous balance. Waves start automatically after a short break; failing to clear a wave before its countdown ends loses the defense. From the main menu, you can also continue a paused defense, open settings, or read the field guide. The in-game menu pauses the simulation; settings opened from the pause menu return to the paused game.
 
 Guardian details are shown in the workshop below the battlefield. Click an empty tile to place the selected guardian, then click a placed guardian to inspect and upgrade it. Guardians can be upgraded twice; upgrades increase damage, range, and attack speed, with area radius also increasing for the Stone Warden. Each wave has a visible clear deadline; after a wave is defeated, the next begins automatically following an eight-second reprieve.
+
+Background music, guardian placement/upgrade, enemy defeat, and life-lost sounds use locally bundled, CC0-licensed audio. Toggle sound in the game header or settings; background music stops while the game is paused or after the defense ends.
 
 ## Adding content
 

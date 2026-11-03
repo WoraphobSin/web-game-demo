@@ -122,43 +122,43 @@ export const ENEMIES = {
 export const DIFFICULTIES = {
   easy: {
     name: "Easy",
-    description: "A gentler start, extra supplies, and fewer foes.",
-    enemyCountMultiplier: 0.75,
-    enemyHealthMultiplier: 0.8,
-    enemySpeedMultiplier: 0.9,
-    startingGold: 280,
-    goldRewardMultiplier: 1.35,
-    deadlineMultiplier: 1.2
+    description: "A forgiving challenge, but the enemy forces have grown.",
+    enemyCountMultiplier: 0.9,
+    enemyHealthMultiplier: 0.95,
+    enemySpeedMultiplier: 0.96,
+    startingGold: 240,
+    goldRewardMultiplier: 1.15,
+    deadlineMultiplier: 1.05
   },
   medium: {
     name: "Medium",
-    description: "The balanced challenge. A fair test for new defenders.",
-    enemyCountMultiplier: 1,
-    enemyHealthMultiplier: 1,
-    enemySpeedMultiplier: 1,
-    startingGold: 220,
-    goldRewardMultiplier: 1,
-    deadlineMultiplier: 1
+    description: "A sharper test with larger waves and less time to prepare.",
+    enemyCountMultiplier: 1.12,
+    enemyHealthMultiplier: 1.15,
+    enemySpeedMultiplier: 1.04,
+    startingGold: 200,
+    goldRewardMultiplier: 0.9,
+    deadlineMultiplier: 0.9
   },
   hard: {
     name: "Hard",
-    description: "More resilient enemies, larger waves, tighter gold.",
-    enemyCountMultiplier: 1.25,
-    enemyHealthMultiplier: 1.3,
-    enemySpeedMultiplier: 1.08,
-    startingGold: 180,
-    goldRewardMultiplier: 0.8,
-    deadlineMultiplier: 0.88
+    description: "Large, fast, resilient waves and scarce gold.",
+    enemyCountMultiplier: 1.45,
+    enemyHealthMultiplier: 1.55,
+    enemySpeedMultiplier: 1.14,
+    startingGold: 160,
+    goldRewardMultiplier: 0.7,
+    deadlineMultiplier: 0.75
   },
   expert: {
     name: "Expert",
-    description: "Relentless numbers, fearsome strength, scarce rewards.",
-    enemyCountMultiplier: 1.5,
-    enemyHealthMultiplier: 1.65,
-    enemySpeedMultiplier: 1.18,
-    startingGold: 150,
-    goldRewardMultiplier: 0.65,
-    deadlineMultiplier: 0.78
+    description: "Overwhelming hordes, brutal strength, and almost no reprieve.",
+    enemyCountMultiplier: 1.8,
+    enemyHealthMultiplier: 2,
+    enemySpeedMultiplier: 1.25,
+    startingGold: 130,
+    goldRewardMultiplier: 0.5,
+    deadlineMultiplier: 0.62
   }
 };
 
