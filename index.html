@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1019">
+    <title>Mythic Bastion — Tower Defense</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Mythic Bastion home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span><strong>MYTHIC</strong><small>BASTION</small></span>
+        </a>
+        <div class="game-title">
+          <span class="eyebrow">THE REALM IS UNDER SIEGE</span>
+          <h1>Hold the <em>Ancient Road</em></h1>
+        </div>
+        <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
+          <span id="sound-icon" aria-hidden="true">♫</span> Sound off
+        </button>
+      </header>
+
+      <section class="battle-layout" aria-label="Tower defense game">
+        <aside class="sidebar">
+          <div class="panel status-panel">
+            <div class="panel-heading"><span class="rune">◈</span> WAR TABLE</div>
+            <div class="stats-grid">
+              <div class="stat"><span class="stat-icon heart">♥</span><span class="stat-label">LIVES</span><strong id="lives">20</strong></div>
+              <div class="stat"><span class="stat-icon coin">◉</span><span class="stat-label">GOLD</span><strong id="gold">220</strong></div>
+              <div class="stat"><span class="stat-icon score">✧</span><span class="stat-label">SCORE</span><strong id="score">0</strong></div>
+              <div class="stat"><span class="stat-icon time">⌛</span><span class="stat-label">TIME</span><strong id="timer">00:00</strong></div>
+            </div>
+            <div class="wave-row">
+              <div><span class="stat-label">CURRENT WAVE</span><strong id="wave">1</strong></div>
+              <div class="wave-progress"><span id="wave-progress"></span></div>
+            </div>
+          </div>
+
+          <div class="panel arsenal-panel">
+            <div class="panel-heading"><span class="rune">⚒</span> CHOOSE YOUR GUARDIAN</div>
+            <p class="panel-hint">Select a guardian, then place it beside the road.</p>
+            <div class="tower-list" id="tower-list"></div>
+            <div class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</div>
+          </div>
+
+          <div class="panel command-panel">
+            <div class="panel-heading"><span class="rune">✦</span> COMMAND</div>
+            <button class="primary-button" id="wave-button" type="button"><span>▶</span> Begin Wave 1</button>
+            <button class="secondary-button" id="speed-button" type="button"><span>»</span> Double Speed</button>
+            <p class="command-tip">Guardians attack automatically. Keep the creatures from reaching the gate.</p>
+          </div>
+        </aside>
+
+        <section class="arena-column">
+          <div class="arena-heading">
+            <div><span class="eyebrow">NORTHERN FRONTIER</span><h2>The Moonlit Pass</h2></div>
+            <span class="weather"><span class="weather-dot"></span> NIGHTFALL · <span id="enemy-count">0</span> FOES</span>
+          </div>
+          <div class="arena-frame">
+            <canvas id="game-canvas" width="960" height="528" aria-label="Game board. Select a guardian, then click an empty tile to place it."></canvas>
+            <div class="arena-overlay" id="arena-overlay">
+              <div class="overlay-card">
+                <span class="overlay-rune">✦</span>
+                <span class="eyebrow">A MYTHIC DEFENSE BEGINS</span>
+                <h2>Darkness stirs<br>beyond the pass.</h2>
+                <p>Raise your guardians. Protect the ancient road.</p>
+                <button class="primary-button" id="start-button" type="button">Enter the battlefield <span>→</span></button>
+              </div>
+            </div>
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+          </div>
+          <div class="arena-footer">
+            <span><i class="legend-road"></i> Ancient road</span>
+            <span><i class="legend-guardian"></i> Your guardians</span>
+            <span class="footer-tip">Click an open tile to place · Right-click to cancel</span>
+          </div>
+        </section>
+      </section>
+      <footer class="page-footer"><span>MYTHIC BASTION</span><span>THE OLD POWERS STILL WATCH</span><span>✦</span></footer>
+    </main>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
