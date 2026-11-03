@@ -74,7 +74,7 @@ export function createUi() {
       copy.append(name, description);
       const stats = document.createElement("small");
       stats.className = "tower-card-stats";
-      stats.textContent = `${definition.damage} dmg · ${(1 / definition.cooldown).toFixed(1)}/sec · ${definition.splashRadius ? `${definition.splashRadius}px area` : "single target"}`;
+      stats.textContent = `${definition.damage} dmg · ${(1 / definition.cooldown).toFixed(1)}/sec · ${definition.splashRadius ? `${definition.splashRadius} m area` : "single target"}`;
       copy.append(stats);
 
       const cost = document.createElement("span");
@@ -182,7 +182,7 @@ export function createUi() {
       ? getTowerStats({ ...placed, level: placed.level + 1 })
       : undefined;
     const saleValue = placed ? getTowerSaleValue(placed) : undefined;
-    const area = stats.splashRadius ? `${stats.splashRadius}px radius` : "Single target";
+    const area = stats.splashRadius ? `${stats.splashRadius} m radius` : "Single target";
     const heading = placed ? `${definition.name} · Level ${placed.level}` : `${definition.name} · Placement stats`;
     const upgradeButton = placed
       ? isMaxLevel
@@ -202,9 +202,9 @@ export function createUi() {
         <div><span>Damage / hit</span><strong>${stats.damage}</strong></div>
         <div><span>Attack speed</span><strong>${(1 / stats.cooldown).toFixed(2)} / sec</strong></div>
         <div><span>Attack area</span><strong>${area}</strong></div>
-        <div><span>Range</span><strong>${stats.range}px</strong></div>
+        <div><span>Range</span><strong>${stats.range} m</strong></div>
       </div>
-      ${nextLevelStats ? `<p class="upgrade-hint">Damage: ${stats.damage} → ${nextLevelStats.damage} · Attack speed: ${(1 / stats.cooldown).toFixed(2)} → ${(1 / nextLevelStats.cooldown).toFixed(2)} / sec · Range: ${stats.range} → ${nextLevelStats.range}px${stats.splashRadius ? ` · Area: ${stats.splashRadius} → ${nextLevelStats.splashRadius}px` : ""}</p>` : ""}
+      ${nextLevelStats ? `<p class="upgrade-hint">Damage: ${stats.damage} → ${nextLevelStats.damage} · Attack speed: ${(1 / stats.cooldown).toFixed(2)} → ${(1 / nextLevelStats.cooldown).toFixed(2)} / sec · Range: ${stats.range} → ${nextLevelStats.range} m${stats.splashRadius ? ` · Area: ${stats.splashRadius} → ${nextLevelStats.splashRadius} m` : ""}</p>` : ""}
       ${upgradeButton}
       ${sellButton}`;
     if (markup !== inspectorMarkup) {
