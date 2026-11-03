@@ -1,5 +1,5 @@
-import { ENEMIES, PATH, TOWERS, createWaveQueue } from "./config.js";
-import { createEnemy, createParticle, createProjectile } from "./entities.js";
+import { DIFFICULTIES, PATH, createWaveQueue } from "./config.js";
+import { createEnemy, createParticle, createProjectile, getTowerStats } from "./entities.js";
 
 function distanceBetween(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -43,7 +43,7 @@ function updateParticles(state, deltaTime) {
 
 function fireTowers(state, deltaTime, effects) {
   for (const tower of state.towers) {
-    const definition = TOWERS[tower.type];
+    const definition = getTowerStats(tower);
     tower.cooldownRemaining -= deltaTime;
     tower.pulse = Math.max(0, tower.pulse - deltaTime);
     if (tower.cooldownRemaining > 0) continue;
@@ -71,9 +71,8 @@ function damageEnemies(state, projectile, target) {
     if (enemy.hp > 0) continue;
 
     state.enemies = state.enemies.filter((candidate) => candidate.id !== enemy.id);
-    const definition = ENEMIES[enemy.type];
-    state.score += definition.score;
-    state.gold += definition.reward;
+    state.score += enemy.score;
+    state.gold += enemy.reward;
   }
 }
 
@@ -110,6 +109,7 @@ function moveEnemies(state, deltaTime, effects) {
     if (state.lives <= 0) {
       state.lives = 0;
       state.gameOver = true;
+      state.gameOverReason = "lives";
       state.running = false;
       effects.push({ type: "game-over" });
       break;
@@ -118,24 +118,41 @@ function moveEnemies(state, deltaTime, effects) {
 }
 
 export function beginWave(state) {
-  state.spawnQueue = createWaveQueue(state.wave);
+  state.spawnQueue = createWaveQueue(state.wave, state.difficulty);
   state.waveTotal = state.spawnQueue.length;
   state.spawnClock = 0;
+  state.intermissionRemaining = 0;
+  state.waveTimeRemaining = getWaveTimeLimit(state.wave, state.difficulty, state.waveTotal);
   state.running = true;
+}
+
+export function getWaveTimeLimit(wave, difficulty, enemyCount) {
+  const settings = DIFFICULTIES[difficulty];
+  if (!settings) throw new Error(`Unknown difficulty: ${difficulty}`);
+  return Math.round((75 + wave * 4 + enemyCount * 1.25) * settings.deadlineMultiplier);
 }
 
 export function updateGame(state, deltaTime) {
   const effects = [];
+  if (state.paused) return effects;
   if (state.started && !state.gameOver) state.elapsed += deltaTime;
+  if (!state.running && state.intermissionRemaining > 0 && !state.gameOver) {
+    state.intermissionRemaining = Math.max(0, state.intermissionRemaining - deltaTime * state.speed);
+    if (state.intermissionRemaining === 0) {
+      beginWave(state);
+      effects.push({ type: "wave-started", wave: state.wave });
+    }
+  }
   if (!state.running || state.gameOver) {
     updateParticles(state, deltaTime);
     return effects;
   }
 
   const scaledDelta = deltaTime * state.speed;
+  state.waveTimeRemaining = Math.max(0, state.waveTimeRemaining - scaledDelta);
   state.spawnClock -= scaledDelta;
   if (state.spawnQueue.length && state.spawnClock <= 0) {
-    state.enemies.push(createEnemy(state.spawnQueue.shift(), state.wave));
+    state.enemies.push(createEnemy(state.spawnQueue.shift(), state.wave, state.difficulty));
     state.spawnClock = Math.max(0.44, 1.02 - state.wave * 0.025);
   }
 
@@ -144,13 +161,24 @@ export function updateGame(state, deltaTime) {
   updateProjectiles(state, scaledDelta, effects);
   updateParticles(state, deltaTime);
 
+  if (state.waveTimeRemaining === 0 && (state.spawnQueue.length || state.enemies.length)) {
+    state.gameOver = true;
+    state.running = false;
+    state.lives = 0;
+    state.gameOverReason = "deadline";
+    effects.push({ type: "wave-timeout" });
+    effects.push({ type: "game-over" });
+    return effects;
+  }
+
   if (!state.spawnQueue.length && !state.enemies.length && !state.gameOver) {
-    const reward = 35 + state.wave * 3;
+    const reward = Math.max(1, Math.round((35 + state.wave * 3) * DIFFICULTIES[state.difficulty].goldRewardMultiplier));
     const clearedWave = state.wave;
     state.running = false;
     state.score += state.wave * 50;
     state.gold += reward;
     state.wave++;
+    state.intermissionRemaining = 8;
     effects.push({ type: "wave-cleared", wave: clearedWave, reward });
     effects.push({ type: "tone", frequency: 690, duration: 0.22 });
   }

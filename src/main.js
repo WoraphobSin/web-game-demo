@@ -1,4 +1,4 @@
-import { INITIAL_GAME_STATE, TOWERS } from "./config.js";
+import { DIFFICULTIES, INITIAL_GAME_STATE, TOWERS } from "./config.js";
 import { createAudio } from "./audio.js";
 import { createTower, getCellFromPosition } from "./entities.js";
 import { isInsideBoard, isPathCell } from "./map.js";
@@ -16,15 +16,50 @@ const ui = createUi();
 const audio = createAudio();
 const renderer = createRenderer(canvas);
 let lastFrameTime = 0;
+let settingsReturnScreen = "menu";
+let selectedDifficulty = state.difficulty;
+
+const screens = {
+  landing: document.querySelector("#landing-screen"),
+  menu: document.querySelector("#menu-screen"),
+  difficulty: document.querySelector("#difficulty-screen"),
+  settings: document.querySelector("#settings-screen"),
+  guide: document.querySelector("#how-to-screen"),
+  game: document.querySelector("#game-screen")
+};
+
+function showScreen(name) {
+  for (const [screenName, element] of Object.entries(screens)) {
+    element.hidden = screenName !== name;
+  }
+}
 
 function showToast(message) {
   ui.showToast(message);
   state.toastRemaining = 1.8;
 }
 
-function resetGame() {
-  Object.assign(state, structuredClone(INITIAL_GAME_STATE));
+function resetGame(difficulty = selectedDifficulty) {
+  const settings = { soundEnabled: state.soundEnabled, speed: state.speed };
+  Object.assign(state, structuredClone(INITIAL_GAME_STATE), settings, {
+    difficulty,
+    gold: DIFFICULTIES[difficulty].startingGold
+  });
+  ui.selectDifficulty(difficulty);
   ui.resetOverlay();
+  ui.render(state);
+}
+
+function openSettings(returnScreen) {
+  settingsReturnScreen = returnScreen;
+  showScreen("settings");
+  ui.render(state);
+}
+
+function toggleSound() {
+  state.soundEnabled = !state.soundEnabled;
+  ui.render(state);
+  audio.play(state, 520, 0.12);
 }
 
 function startWave() {
@@ -64,6 +99,13 @@ function placeTower(event) {
   const { column, row } = getCellFromPosition(position.x, position.y);
 
   if (!isInsideBoard(column, row)) return;
+  const placedTower = state.towers.find((tower) => tower.column === column && tower.row === row);
+  if (placedTower) {
+    state.selectedTowerId = placedTower.id;
+    ui.render(state);
+    return;
+  }
+  state.selectedTowerId = null;
   if (isPathCell(column, row)) {
     showToast("The ancient road must remain clear.");
     return;
@@ -80,7 +122,9 @@ function placeTower(event) {
   }
 
   state.gold -= definition.cost;
-  state.towers.push(createTower(state.selectedTower, column, row));
+  const tower = createTower(state.selectedTower, column, row);
+  state.towers.push(tower);
+  state.selectedTowerId = tower.id;
   audio.play(state, 320, 0.11, "triangle");
   ui.render(state);
 }
@@ -91,6 +135,10 @@ function handleEffects(effects) {
       audio.play(state, effect.frequency, effect.duration, effect.wave);
     } else if (effect.type === "wave-cleared") {
       showToast(`Wave ${effect.wave} cleared! +${effect.reward} gold`);
+    } else if (effect.type === "wave-started") {
+      showToast(`Wave ${effect.wave} begins!`);
+    } else if (effect.type === "wave-timeout") {
+      showToast("The wave deadline has passed. The pass is lost.");
     } else if (effect.type === "game-over") {
       ui.render(state);
     }
@@ -98,7 +146,7 @@ function handleEffects(effects) {
 }
 
 function update(deltaTime) {
-  if (state.toastRemaining > 0) {
+  if (!state.paused && state.toastRemaining > 0) {
     state.toastRemaining -= deltaTime;
     if (state.toastRemaining <= 0) ui.hideToast();
   }
@@ -117,15 +165,61 @@ function frame(timestamp) {
 ui.renderTowerOptions(selectTower);
 ui.elements.waveButton.addEventListener("click", startWave);
 ui.elements.overlay.querySelector("#start-button").addEventListener("click", startWave);
-ui.elements.soundButton.addEventListener("click", () => {
-  state.soundEnabled = !state.soundEnabled;
-  ui.render(state);
-  audio.play(state, 520, 0.12);
-});
+ui.elements.soundButton.addEventListener("click", toggleSound);
 ui.elements.speedButton.addEventListener("click", () => {
   state.speed = state.speed === 1 ? 2 : 1;
   ui.render(state);
 });
+document.querySelector("#landing-play").addEventListener("click", () => showScreen("menu"));
+document.querySelector("#menu-back-button").addEventListener("click", () => showScreen("landing"));
+document.querySelector("#new-game-button").addEventListener("click", () => showScreen("difficulty"));
+document.querySelector("#difficulty-back-button").addEventListener("click", () => showScreen("menu"));
+document.querySelectorAll(".difficulty-option").forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedDifficulty = button.dataset.difficulty;
+    ui.selectDifficulty(selectedDifficulty);
+    ui.render(state);
+  });
+});
+document.querySelector("#start-defense-button").addEventListener("click", () => {
+  resetGame(selectedDifficulty);
+  showScreen("game");
+});
+ui.elements.continueButton.addEventListener("click", () => {
+  state.paused = false;
+  showScreen("game");
+});
+document.querySelector("#settings-button").addEventListener("click", () => openSettings("menu"));
+document.querySelector("#how-to-button").addEventListener("click", () => showScreen("guide"));
+document.querySelector("#settings-back-button").addEventListener("click", () => showScreen(settingsReturnScreen));
+document.querySelector("#guide-back-button").addEventListener("click", () => showScreen("menu"));
+document.querySelector("#settings-sound").addEventListener("change", (event) => {
+  state.soundEnabled = event.currentTarget.checked;
+  ui.render(state);
+  audio.play(state, 520, 0.12);
+});
+document.querySelector("#settings-speed").addEventListener("change", (event) => {
+  state.speed = event.currentTarget.checked ? 2 : 1;
+  ui.render(state);
+});
+ui.elements.inspector.addEventListener("click", (event) => {
+  if (!(event.target instanceof Element) || !event.target.closest("[data-upgrade-tower]")) return;
+  upgradeSelectedTower();
+});
+document.querySelector("#pause-button").addEventListener("click", () => {
+  if (!state.started || state.gameOver) {
+    showScreen("menu");
+    return;
+  }
+  state.paused = true;
+  ui.render(state);
+});
+document.querySelector("#resume-button").addEventListener("click", () => {
+  state.paused = false;
+  ui.render(state);
+});
+document.querySelector("#pause-settings-button").addEventListener("click", () => openSettings("game"));
+document.querySelector("#pause-menu-button").addEventListener("click", () => showScreen("menu"));
 canvas.addEventListener("click", placeTower);
 canvas.addEventListener("mousemove", (event) => {
   const bounds = canvas.getBoundingClientRect();
@@ -143,5 +237,24 @@ canvas.addEventListener("contextmenu", (event) => {
   showToast("Placement selection reset.");
 });
 
+function upgradeSelectedTower() {
+  const tower = state.towers.find((candidate) => candidate.id === state.selectedTowerId);
+  if (!tower) return;
+  const definition = TOWERS[tower.type];
+  const cost = definition.upgradeCosts[tower.level - 1];
+  if (cost === undefined || tower.level >= 3) return;
+  if (state.gold < cost) {
+    showToast("Not enough gold to upgrade this guardian.");
+    return;
+  }
+
+  state.gold -= cost;
+  tower.level++;
+  ui.render(state);
+  showToast(`${definition.name} upgraded to level ${tower.level}!`);
+}
+
 ui.render(state);
+ui.selectDifficulty(selectedDifficulty);
+showScreen("landing");
 requestAnimationFrame(frame);

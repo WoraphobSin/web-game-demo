@@ -14,7 +14,7 @@ Open [http://localhost:8765](http://localhost:8765) in a browser. Use a local se
 
 ## Project structure
 
-- `index.html` contains the game shell and accessible UI anchors.
+- `index.html` contains the landing page, main menu, settings, field guide, and accessible game shell.
 - `style.css` contains layout and visual styling.
 - `src/config.js` is the game catalog and balance configuration: board, road, tower definitions, enemy definitions, and wave composition.
 - `src/map.js` contains board-cell and road helpers.
@@ -24,6 +24,12 @@ Open [http://localhost:8765](http://localhost:8765) in a browser. Use a local se
 - `src/ui.js` renders catalog-driven controls and game status.
 - `src/audio.js` provides optional sound effects.
 - `src/main.js` connects input, simulation, rendering, UI, and audio.
+
+## Menu flow
+
+The game opens on the landing page, then proceeds to the main menu. Choose **Play** to select Easy, Medium, Hard, or Expert before starting a new defense. Difficulty affects enemy wave size, health, speed, starting gold, gold earned from kills and cleared waves, and each wave's clear deadline. Waves start automatically after a short break; failing to clear a wave before its countdown ends loses the defense. From the main menu, you can also continue a paused defense, open settings, or read the field guide. The in-game menu pauses the simulation; settings opened from the pause menu return to the paused game.
+
+Guardian details are shown in the workshop below the battlefield. Click an empty tile to place the selected guardian, then click a placed guardian to inspect and upgrade it. Guardians can be upgraded twice; upgrades increase damage, range, and attack speed, with area radius also increasing for the Stone Warden. Each wave has a visible clear deadline; after a wave is defeated, the next begins automatically following an eight-second reprieve.
 
 ## Adding content
 

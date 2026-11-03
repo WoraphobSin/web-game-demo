@@ -8,19 +8,127 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <main class="game-shell">
+    <main id="landing-screen" class="title-screen">
+      <div class="title-sky" aria-hidden="true"><span>✦</span><span>✧</span><span>✦</span><span>·</span><span>✧</span></div>
+      <header class="title-header">
+        <a class="brand" href="#" aria-label="Mythic Bastion home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span><strong>MYTHIC</strong><small>BASTION</small></span>
+        </a>
+        <span class="eyebrow">A FANTASY TOWER DEFENSE</span>
+      </header>
+      <section class="title-hero" aria-labelledby="landing-title">
+        <div class="hero-crest" aria-hidden="true"><span>✦</span></div>
+        <p class="eyebrow">THE OLD POWERS STILL WATCH</p>
+        <h1 id="landing-title">MYTHIC<br><em>BASTION</em></h1>
+        <p class="hero-copy">When darkness marches along the ancient road,<br>only your guardians stand between the realm and ruin.</p>
+        <button class="primary-button title-play-button" id="landing-play" type="button">Enter the realm <span>→</span></button>
+        <div class="title-meta"><span>✦ &nbsp; DEFEND THE MOONLIT PASS</span><span>ENDLESS WAVES · MYTHIC FOES</span></div>
+      </section>
+      <footer class="title-footer"><span>ANCIENT MAGIC. ETERNAL VIGIL.</span><span>✦</span></footer>
+    </main>
+
+    <main id="menu-screen" class="screen-menu" hidden>
+      <header class="screen-topbar">
+        <a class="brand" href="#" aria-label="Mythic Bastion home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span><strong>MYTHIC</strong><small>BASTION</small></span>
+        </a>
+        <span class="eyebrow">THE MOONLIT PASS AWAITS</span>
+      </header>
+      <section class="menu-content" aria-labelledby="menu-title">
+        <p class="eyebrow">NORTHERN FRONTIER</p>
+        <h1 id="menu-title">The realm is <em>yours to defend.</em></h1>
+        <p>Prepare your guardians and hold the ancient road against the darkness.</p>
+        <div class="menu-actions">
+          <button class="primary-button menu-button" id="new-game-button" type="button">Play <span>→</span></button>
+          <button class="secondary-button menu-button" id="continue-button" type="button" hidden>Continue defense</button>
+          <button class="secondary-button menu-button" id="settings-button" type="button">Settings <span>⚙</span></button>
+          <button class="secondary-button menu-button" id="how-to-button" type="button">How to play <span>?</span></button>
+          <button class="text-button" id="menu-back-button" type="button">← Back to title</button>
+        </div>
+        <div class="menu-sigil" aria-hidden="true">✦</div>
+      </section>
+      <footer class="title-footer"><span>MYTHIC BASTION</span><span>✦</span></footer>
+    </main>
+
+    <main id="difficulty-screen" class="aux-screen" hidden>
+      <section class="aux-card difficulty-card" aria-labelledby="difficulty-title">
+        <p class="eyebrow">CHOOSE YOUR TRIAL</p>
+        <h1 id="difficulty-title">Set the challenge.</h1>
+        <p class="aux-description">Difficulty changes the enemy waves, their strength, and the gold you earn.</p>
+        <div class="difficulty-options" id="difficulty-options" role="group" aria-label="Choose difficulty">
+          <button class="difficulty-option" data-difficulty="easy" type="button" aria-pressed="false">
+            <span class="difficulty-name">Easy</span><span class="difficulty-summary">Fewer, weaker foes · 280 starting gold · generous rewards</span>
+          </button>
+          <button class="difficulty-option selected" data-difficulty="medium" type="button" aria-pressed="true">
+            <span class="difficulty-name">Medium</span><span class="difficulty-summary">Balanced waves · 220 starting gold · standard rewards</span>
+          </button>
+          <button class="difficulty-option" data-difficulty="hard" type="button" aria-pressed="false">
+            <span class="difficulty-name">Hard</span><span class="difficulty-summary">More, tougher foes · 180 starting gold · reduced rewards</span>
+          </button>
+          <button class="difficulty-option" data-difficulty="expert" type="button" aria-pressed="false">
+            <span class="difficulty-name">Expert</span><span class="difficulty-summary">Relentless, powerful waves · 150 starting gold · scarce rewards</span>
+          </button>
+        </div>
+        <div class="aux-actions">
+          <button class="primary-button menu-button" id="start-defense-button" type="button">Begin on Medium <span>→</span></button>
+          <button class="text-button" id="difficulty-back-button" type="button">← Back to main menu</button>
+        </div>
+      </section>
+    </main>
+
+    <main id="settings-screen" class="aux-screen" hidden>
+      <section class="aux-card" aria-labelledby="settings-title">
+        <p class="eyebrow">MAKE IT YOURS</p>
+        <h1 id="settings-title">Settings</h1>
+        <p class="aux-description">Tune the battlefield to your liking.</p>
+        <label class="setting-row" for="settings-sound">
+          <span><strong>Sound effects</strong><small>Guardian magic and battle sounds</small></span>
+          <input id="settings-sound" type="checkbox">
+        </label>
+        <label class="setting-row" for="settings-speed">
+          <span><strong>Double game speed</strong><small>Move through waves at twice the pace</small></span>
+          <input id="settings-speed" type="checkbox">
+        </label>
+        <div class="aux-actions">
+          <button class="primary-button menu-button" id="settings-back-button" type="button">Save and return</button>
+        </div>
+      </section>
+    </main>
+
+    <main id="how-to-screen" class="aux-screen" hidden>
+      <section class="aux-card" aria-labelledby="how-to-title">
+        <p class="eyebrow">FIELD GUIDE</p>
+        <h1 id="how-to-title">How to play</h1>
+        <div class="guide-list">
+          <p><span>01</span><strong>Choose a guardian</strong><small>Archer shrines are swift, moon mages strike from afar, and stone wardens hit groups.</small></p>
+          <p><span>02</span><strong>Guard the road</strong><small>Place guardians on open tiles. The ancient road must stay clear.</small></p>
+          <p><span>03</span><strong>Beat the deadline</strong><small>Each wave has a timer. Clear the foes before time runs out; the next wave begins automatically after a short break.</small></p>
+          <p><span>04</span><strong>Upgrade your guardians</strong><small>Select a guardian on the battlefield to inspect its stats and spend gold on up to two upgrades.</small></p>
+        </div>
+        <div class="aux-actions">
+          <button class="primary-button menu-button" id="guide-back-button" type="button">Back to menu</button>
+        </div>
+      </section>
+    </main>
+
+    <main id="game-screen" class="game-shell" hidden>
       <header class="topbar">
         <a class="brand" href="#" aria-label="Mythic Bastion home">
           <span class="brand-mark" aria-hidden="true">✦</span>
           <span><strong>MYTHIC</strong><small>BASTION</small></span>
         </a>
         <div class="game-title">
-          <span class="eyebrow">THE REALM IS UNDER SIEGE</span>
+          <span class="eyebrow">THE REALM IS UNDER SIEGE · <span id="difficulty-label">MEDIUM</span></span>
           <h1>Hold the <em>Ancient Road</em></h1>
         </div>
-        <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
-          <span id="sound-icon" aria-hidden="true">♫</span> Sound off
-        </button>
+        <div class="game-header-actions">
+          <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
+            <span id="sound-icon" aria-hidden="true">♫</span> Sound off
+          </button>
+          <button class="sound-toggle" id="pause-button" type="button">Ⅱ Menu</button>
+        </div>
       </header>
 
       <section class="battle-layout" aria-label="Tower defense game">
@@ -37,20 +145,14 @@
               <div><span class="stat-label">CURRENT WAVE</span><strong id="wave">1</strong></div>
               <div class="wave-progress"><span id="wave-progress"></span></div>
             </div>
-          </div>
-
-          <div class="panel arsenal-panel">
-            <div class="panel-heading"><span class="rune">⚒</span> CHOOSE YOUR GUARDIAN</div>
-            <p class="panel-hint">Select a guardian, then place it beside the road.</p>
-            <div class="tower-list" id="tower-list"></div>
-            <div class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</div>
+            <div class="deadline-row"><span id="deadline-label">WAVE DEADLINE</span><strong id="wave-deadline">--:--</strong></div>
           </div>
 
           <div class="panel command-panel">
             <div class="panel-heading"><span class="rune">✦</span> COMMAND</div>
             <button class="primary-button" id="wave-button" type="button"><span>▶</span> Begin Wave 1</button>
             <button class="secondary-button" id="speed-button" type="button"><span>»</span> Double Speed</button>
-            <p class="command-tip">Guardians attack automatically. Keep the creatures from reaching the gate.</p>
+            <p class="command-tip">Clear each wave before its deadline. The next wave begins automatically after a short reprieve.</p>
           </div>
         </aside>
 
@@ -75,11 +177,33 @@
           <div class="arena-footer">
             <span><i class="legend-road"></i> Ancient road</span>
             <span><i class="legend-guardian"></i> Your guardians</span>
-            <span class="footer-tip">Click an open tile to place · Right-click to cancel</span>
+            <span class="footer-tip">Click an open tile to place · Select a guardian to upgrade · Right-click to cancel</span>
           </div>
         </section>
       </section>
+      <section class="guardian-workshop panel" aria-label="Guardian workshop">
+        <div class="workshop-heading">
+          <div><div class="panel-heading"><span class="rune">⚒</span> GUARDIAN WORKSHOP</div><p class="panel-hint">Choose a guardian to place, or select one on the battlefield to upgrade it.</p></div>
+          <span class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</span>
+        </div>
+        <div class="workshop-content">
+          <div class="tower-list" id="tower-list"></div>
+          <section class="guardian-inspector" id="guardian-inspector" aria-live="polite" aria-label="Selected guardian details"></section>
+        </div>
+      </section>
       <footer class="page-footer"><span>MYTHIC BASTION</span><span>THE OLD POWERS STILL WATCH</span><span>✦</span></footer>
+      <div class="modal-backdrop" id="pause-modal" hidden>
+        <section class="aux-card pause-card" aria-labelledby="pause-title">
+          <p class="eyebrow">DEFENSE PAUSED</p>
+          <h1 id="pause-title">Take a moment.</h1>
+          <p class="aux-description">The battle is waiting for you.</p>
+          <div class="aux-actions">
+            <button class="primary-button menu-button" id="resume-button" type="button">Resume defense</button>
+            <button class="secondary-button menu-button" id="pause-settings-button" type="button">Settings</button>
+            <button class="text-button" id="pause-menu-button" type="button">Return to main menu</button>
+          </div>
+        </section>
+      </div>
     </main>
     <script type="module" src="src/main.js"></script>
   </body>

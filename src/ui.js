@@ -1,6 +1,10 @@
-import { TOWERS } from "./config.js";
+import { DIFFICULTIES, TOWERS } from "./config.js";
+import { getTowerStats } from "./entities.js";
 
 export function createUi() {
+  let selectedDifficulty = "medium";
+  let inspectorMarkup = "";
+
   const elements = {
     lives: document.querySelector("#lives"),
     gold: document.querySelector("#gold"),
@@ -16,8 +20,32 @@ export function createUi() {
     soundButton: document.querySelector("#sound-toggle"),
     soundIcon: document.querySelector("#sound-icon"),
     speedButton: document.querySelector("#speed-button"),
-    toast: document.querySelector("#toast")
+    toast: document.querySelector("#toast"),
+    pauseModal: document.querySelector("#pause-modal"),
+    settingsSound: document.querySelector("#settings-sound"),
+    settingsSpeed: document.querySelector("#settings-speed"),
+    continueButton: document.querySelector("#continue-button"),
+    difficultyOptions: document.querySelector("#difficulty-options"),
+    difficultyLabel: document.querySelector("#difficulty-label"),
+    startDefenseButton: document.querySelector("#start-defense-button"),
+    inspector: document.querySelector("#guardian-inspector"),
+    deadline: document.querySelector("#wave-deadline"),
+    deadlineLabel: document.querySelector("#deadline-label")
   };
+
+  function selectDifficulty(difficulty) {
+    if (!Object.hasOwn(DIFFICULTIES, difficulty)) {
+      throw new Error(`Unknown difficulty: ${difficulty}`);
+    }
+
+    selectedDifficulty = difficulty;
+    for (const button of elements.difficultyOptions.querySelectorAll(".difficulty-option")) {
+      const selected = button.dataset.difficulty === difficulty;
+      button.classList.toggle("selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    }
+    elements.startDefenseButton.innerHTML = `Begin on ${DIFFICULTIES[difficulty].name} <span>→</span>`;
+  }
 
   function renderTowerOptions(onSelectTower) {
     elements.towerList.replaceChildren();
@@ -42,6 +70,10 @@ export function createUi() {
       const description = document.createElement("small");
       description.textContent = definition.description;
       copy.append(name, description);
+      const stats = document.createElement("small");
+      stats.className = "tower-card-stats";
+      stats.textContent = `${definition.damage} dmg · ${(1 / definition.cooldown).toFixed(1)}/sec · ${definition.splashRadius ? `${definition.splashRadius}px area` : "single target"}`;
+      copy.append(stats);
 
       const cost = document.createElement("span");
       cost.className = "tower-cost";
@@ -58,9 +90,13 @@ export function createUi() {
       const heading = elements.overlay.querySelector("h2");
       const description = elements.overlay.querySelector("p");
       const button = elements.overlay.querySelector("#start-button");
-      eyebrow.textContent = "THE PASS HAS FALLEN";
-      heading.textContent = `Your score: ${state.score.toLocaleString()} · The realm remembers.`;
-      description.textContent = `You held for ${formatTime(state.elapsed)}. Gather your guardians and try again.`;
+      eyebrow.textContent = state.gameOverReason === "deadline" ? "THE WAVE DEADLINE HAS PASSED" : "THE PASS HAS FALLEN";
+      heading.textContent = state.gameOverReason === "deadline"
+        ? `Wave ${state.wave} overwhelmed the pass.`
+        : `Your score: ${state.score.toLocaleString()} · The realm remembers.`;
+      description.textContent = state.gameOverReason === "deadline"
+        ? `The enemies were not defeated in time. You held for ${formatTime(state.elapsed)}.`
+        : `You held for ${formatTime(state.elapsed)}. Gather your guardians and try again.`;
       button.textContent = "Defend the realm again";
       elements.overlay.classList.remove("hidden");
       return;
@@ -90,23 +126,79 @@ export function createUi() {
 
     const defeated = Math.max(0, state.waveTotal - state.spawnQueue.length - state.enemies.length);
     elements.progress.style.width = state.waveTotal ? `${Math.min(100, defeated / state.waveTotal * 100)}%` : "0%";
+    if (state.running) {
+      elements.deadlineLabel.textContent = "TIME TO CLEAR";
+      elements.deadline.textContent = formatTime(state.waveTimeRemaining);
+      elements.deadline.classList.toggle("urgent", state.waveTimeRemaining <= 15);
+    } else if (state.intermissionRemaining > 0) {
+      elements.deadlineLabel.textContent = "NEXT WAVE IN";
+      elements.deadline.textContent = formatTime(state.intermissionRemaining);
+      elements.deadline.classList.remove("urgent");
+    } else {
+      elements.deadlineLabel.textContent = "WAVE DEADLINE";
+      elements.deadline.textContent = "--:--";
+      elements.deadline.classList.remove("urgent");
+    }
+
     elements.waveButton.textContent = state.gameOver
       ? "↻ Play Again"
       : state.running
         ? "⚔ Wave in progress"
-        : `▶ Begin Wave ${state.wave}`;
-    elements.waveButton.disabled = state.running;
+        : state.intermissionRemaining > 0
+          ? `Next wave in ${formatTime(state.intermissionRemaining)}`
+          : `▶ Begin Wave ${state.wave}`;
+    elements.waveButton.disabled = state.running || state.intermissionRemaining > 0;
 
     for (const button of elements.towerList.querySelectorAll(".tower-card")) {
       button.classList.toggle("selected", button.dataset.tower === state.selectedTower);
     }
     const selected = TOWERS[state.selectedTower];
-    elements.selectionNote.textContent = `${selected.name} selected — ${selected.cost} gold`;
+    elements.selectionNote.textContent = `${selected.name} selected to place — ${selected.cost} gold`;
+    renderInspector(state);
     elements.soundButton.setAttribute("aria-pressed", String(state.soundEnabled));
     elements.soundIcon.textContent = state.soundEnabled ? "♫" : "♪";
     elements.soundButton.lastChild.textContent = state.soundEnabled ? " Sound on" : " Sound off";
     elements.speedButton.innerHTML = state.speed === 2 ? "<span>»</span> Normal Speed" : "<span>»</span> Double Speed";
+    elements.settingsSound.checked = state.soundEnabled;
+    elements.settingsSpeed.checked = state.speed === 2;
+    elements.continueButton.hidden = !state.started || state.gameOver;
+    elements.pauseModal.hidden = !state.paused || state.gameOver;
+    elements.difficultyLabel.textContent = DIFFICULTIES[state.difficulty].name.toUpperCase();
     showOverlay(state);
+  }
+
+  function renderInspector(state) {
+    const placed = state.towers.find((tower) => tower.id === state.selectedTowerId);
+    const definition = TOWERS[placed?.type ?? state.selectedTower];
+    const tower = placed ?? { type: state.selectedTower, level: 1 };
+    const stats = getTowerStats(tower);
+    const nextCost = placed ? definition.upgradeCosts[placed.level - 1] : undefined;
+    const isMaxLevel = placed && nextCost === undefined;
+    const area = stats.splashRadius ? `${stats.splashRadius}px radius` : "Single target";
+    const heading = placed ? `${definition.name} · Level ${placed.level}` : `${definition.name} · Placement stats`;
+    const upgradeButton = placed
+      ? isMaxLevel
+        ? '<button class="secondary-button upgrade-button" type="button" disabled>Maximum level reached</button>'
+        : `<button class="primary-button upgrade-button" type="button" data-upgrade-tower ${state.gold < nextCost ? "disabled" : ""}>Upgrade · ◉ ${nextCost} <span>→</span></button>`
+      : '<p class="inspector-hint">Place a guardian, then select it on the battlefield to upgrade it.</p>';
+
+    const markup = `
+      <div class="inspector-heading">
+        <span class="tower-emblem" style="--tower-color:${definition.color};--tower-base:${definition.baseColor}" aria-hidden="true">${definition.symbol}</span>
+        <div><p class="stat-label">${placed ? "SELECTED GUARDIAN" : "GUARDIAN DETAILS"}</p><h3>${heading}</h3></div>
+      </div>
+      <div class="inspector-stats">
+        <div><span>Damage / hit</span><strong>${stats.damage}</strong></div>
+        <div><span>Attack speed</span><strong>${(1 / stats.cooldown).toFixed(2)} / sec</strong></div>
+        <div><span>Attack area</span><strong>${area}</strong></div>
+        <div><span>Range</span><strong>${stats.range}px</strong></div>
+      </div>
+      ${placed ? `<p class="upgrade-hint">Next level: +35% damage · +5% range · 14% faster attacks${stats.splashRadius ? " · +10% area" : ""}</p>` : ""}
+      ${upgradeButton}`;
+    if (markup !== inspectorMarkup) {
+      elements.inspector.innerHTML = markup;
+      inspectorMarkup = markup;
+    }
   }
 
   function showToast(message) {
@@ -133,6 +225,7 @@ export function createUi() {
     elements,
     render,
     renderTowerOptions,
+    selectDifficulty,
     showToast,
     hideToast,
     resetOverlay

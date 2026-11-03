@@ -80,7 +80,7 @@ export function createRenderer(canvas) {
 
   function drawTower(state, tower, time) {
     const definition = TOWERS[tower.type];
-    if (isHovered(state, tower)) {
+    if (isHovered(state, tower) || state.selectedTowerId === tower.id) {
       context.beginPath();
       context.arc(tower.x, tower.y, definition.range, 0, Math.PI * 2);
       context.fillStyle = `${definition.color}12`;
@@ -111,6 +111,11 @@ export function createRenderer(canvas) {
     context.textBaseline = "middle";
     context.font = "18px sans-serif";
     context.fillText(definition.symbol, 0, -2);
+    if (tower.level > 1) {
+      context.font = "bold 8px sans-serif";
+      context.fillStyle = "#fff1cc";
+      context.fillText(String(tower.level), 10, 9);
+    }
     context.restore();
   }
 

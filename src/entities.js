@@ -1,4 +1,4 @@
-import { BOARD, ENEMIES, PATH, TOWERS } from "./config.js";
+import { BOARD, DIFFICULTIES, ENEMIES, PATH, TOWERS } from "./config.js";
 import { getCellPosition } from "./map.js";
 
 export function createTower(type, column, row) {
@@ -10,20 +10,45 @@ export function createTower(type, column, row) {
     column,
     row,
     ...getCellPosition(column, row),
+    level: 1,
     cooldownRemaining: 0,
     pulse: 0
   };
 }
 
-export function createEnemy(type, wave) {
+export function getTowerStats(tower) {
+  const definition = TOWERS[tower.type];
+  const upgradeCount = tower.level - 1;
+  const damageMultiplier = 1.35 ** upgradeCount;
+  const cooldownMultiplier = 0.88 ** upgradeCount;
+  const rangeMultiplier = 1.05 ** upgradeCount;
+  const splashMultiplier = 1.1 ** upgradeCount;
+
+  return {
+    ...definition,
+    damage: Math.round(definition.damage * damageMultiplier),
+    cooldown: definition.cooldown * cooldownMultiplier,
+    range: Math.round(definition.range * rangeMultiplier),
+    splashRadius: definition.splashRadius
+      ? Math.round(definition.splashRadius * splashMultiplier)
+      : 0
+  };
+}
+
+export function createEnemy(type, wave, difficulty = "medium") {
   const definition = ENEMIES[type];
   if (!definition) throw new Error(`Unknown enemy type: ${type}`);
+  const settings = DIFFICULTIES[difficulty];
+  if (!settings) throw new Error(`Unknown difficulty: ${difficulty}`);
 
-  const hp = definition.hp + (wave - 1) * definition.hpPerWave;
-  const speed = Math.min(
+  const baseHp = definition.hp + (wave - 1) * definition.hpPerWave;
+  const hp = Math.round(baseHp * settings.enemyHealthMultiplier);
+  const baseSpeed = Math.min(
     definition.speed + (wave - 1) * definition.speedPerWave,
     definition.maxSpeed
   );
+  const speed = baseSpeed * settings.enemySpeedMultiplier;
+  const reward = Math.max(1, Math.round(definition.reward * settings.goldRewardMultiplier));
 
   return {
     id: crypto.randomUUID(),
@@ -35,13 +60,15 @@ export function createEnemy(type, wave) {
     hp,
     maxHp: hp,
     speed,
+    reward,
+    score: definition.score,
     radius: definition.radius,
     wobble: Math.random() * Math.PI * 2
   };
 }
 
 export function createProjectile(tower, target) {
-  const definition = TOWERS[tower.type];
+  const definition = getTowerStats(tower);
   return {
     id: crypto.randomUUID(),
     towerType: tower.type,
@@ -51,7 +78,7 @@ export function createProjectile(tower, target) {
     damage: definition.damage,
     speed: definition.projectileSpeed,
     color: definition.projectileColor,
-    splashRadius: definition.splashRadius ?? 0
+    splashRadius: definition.splashRadius
   };
 }
 

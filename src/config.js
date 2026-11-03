@@ -26,7 +26,8 @@ export const TOWERS = {
     color: "#a9dfbf",
     projectileColor: "#d8f6df",
     symbol: "➶",
-    baseColor: "#375d56"
+    baseColor: "#375d56",
+    upgradeCosts: [55, 85]
   },
   mage: {
     name: "Moon Mage",
@@ -39,7 +40,8 @@ export const TOWERS = {
     color: "#c5a5f4",
     projectileColor: "#ead6ff",
     symbol: "✧",
-    baseColor: "#51416a"
+    baseColor: "#51416a",
+    upgradeCosts: [85, 125]
   },
   stone: {
     name: "Stone Warden",
@@ -53,7 +55,8 @@ export const TOWERS = {
     color: "#e5c994",
     projectileColor: "#ffdda0",
     symbol: "♜",
-    baseColor: "#65533a"
+    baseColor: "#65533a",
+    upgradeCosts: [100, 150]
   }
 };
 
@@ -116,18 +119,67 @@ export const ENEMIES = {
   }
 };
 
-export function getWaveComposition(wave) {
+export const DIFFICULTIES = {
+  easy: {
+    name: "Easy",
+    description: "A gentler start, extra supplies, and fewer foes.",
+    enemyCountMultiplier: 0.75,
+    enemyHealthMultiplier: 0.8,
+    enemySpeedMultiplier: 0.9,
+    startingGold: 280,
+    goldRewardMultiplier: 1.35,
+    deadlineMultiplier: 1.2
+  },
+  medium: {
+    name: "Medium",
+    description: "The balanced challenge. A fair test for new defenders.",
+    enemyCountMultiplier: 1,
+    enemyHealthMultiplier: 1,
+    enemySpeedMultiplier: 1,
+    startingGold: 220,
+    goldRewardMultiplier: 1,
+    deadlineMultiplier: 1
+  },
+  hard: {
+    name: "Hard",
+    description: "More resilient enemies, larger waves, tighter gold.",
+    enemyCountMultiplier: 1.25,
+    enemyHealthMultiplier: 1.3,
+    enemySpeedMultiplier: 1.08,
+    startingGold: 180,
+    goldRewardMultiplier: 0.8,
+    deadlineMultiplier: 0.88
+  },
+  expert: {
+    name: "Expert",
+    description: "Relentless numbers, fearsome strength, scarce rewards.",
+    enemyCountMultiplier: 1.5,
+    enemyHealthMultiplier: 1.65,
+    enemySpeedMultiplier: 1.18,
+    startingGold: 150,
+    goldRewardMultiplier: 0.65,
+    deadlineMultiplier: 0.78
+  }
+};
+
+export function getWaveComposition(wave, difficulty = "medium") {
+  const settings = DIFFICULTIES[difficulty];
+  if (!settings) throw new Error(`Unknown difficulty: ${difficulty}`);
+
   const composition = [{ type: "goblin", count: 8 + (wave - 1) * 3 }];
 
   if (wave >= 2) composition.push({ type: "warg", count: 2 + Math.floor(wave / 2) });
   if (wave >= 3) composition.push({ type: "brute", count: 1 + Math.floor(wave / 3) });
   if (wave % 4 === 0) composition.push({ type: "boss", count: 1 });
 
-  return composition;
+  return composition.map(({ type, count }) => ({
+    type,
+    count: Math.max(1, Math.round(count * settings.enemyCountMultiplier))
+  }));
 }
 
-export function createWaveQueue(wave) {
-  const remaining = getWaveComposition(wave).map(({ type, count }) => ({ type, count }));
+export function createWaveQueue(wave, difficulty = "medium") {
+  const remaining = getWaveComposition(wave, difficulty).map(({ type, count }) => ({ type, count }));
   const queue = [];
   let hasEnemies = true;
 
@@ -146,19 +198,25 @@ export function createWaveQueue(wave) {
 }
 
 export const INITIAL_GAME_STATE = {
+  difficulty: "medium",
   gold: 220,
   lives: 20,
   score: 0,
   wave: 1,
   selectedTower: "arrow",
+  selectedTowerId: null,
   elapsed: 0,
   speed: 1,
   soundEnabled: false,
   started: false,
   running: false,
   gameOver: false,
+  gameOverReason: null,
+  paused: false,
   spawnQueue: [],
   waveTotal: 0,
+  waveTimeRemaining: 0,
+  intermissionRemaining: 0,
   spawnClock: 0,
   toastRemaining: 0,
   towers: [],
