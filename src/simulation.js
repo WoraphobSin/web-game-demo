@@ -56,7 +56,7 @@ function fireTowers(state, deltaTime, effects) {
     state.projectiles.push(createProjectile(tower, target));
     tower.cooldownRemaining = definition.cooldown;
     tower.pulse = 0.15;
-    effects.push({ type: "guardian-fired" });
+    effects.push({ type: "guardian-fired", towerType: tower.type });
   }
 }
 
@@ -73,7 +73,7 @@ function damageEnemies(state, projectile, target, effects) {
     state.enemies = state.enemies.filter((candidate) => candidate.id !== enemy.id);
     state.score += enemy.score;
     state.gold += enemy.reward;
-    effects.push({ type: "enemy-defeated" });
+    effects.push({ type: "enemy-defeated", enemyType: enemy.type });
   }
 }
 

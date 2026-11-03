@@ -182,6 +182,8 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .inspector-hint, .upgrade-hint { margin: 4px 0 0; color: #9298a1; font-size: 9px; line-height: 1.4; }
 .upgrade-hint { margin: 0 0 8px; color: #b7ad96; }
 .upgrade-button { width: 100%; min-height: 34px; margin: 2px 0 0; font-size: 9px; }
+.sell-button { margin-top: 6px; color: #e2b1a9; }
+.sell-button:hover { border-color: #9c625b; color: #f0c2b9; }
 .tower-card { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px; border: 1px solid transparent; border-radius: 5px; background: #1b222e; color: var(--ink); text-align: left; cursor: pointer; transition: .15s ease; }
 .tower-card:hover { border-color: #62553b; background: #212a37; }
 .tower-card.selected { border-color: #8e754a; background: linear-gradient(110deg, #282a2b, #222b35); box-shadow: inset 2px 0 #d1ad6b; }

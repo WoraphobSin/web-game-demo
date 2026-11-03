@@ -1,6 +1,6 @@
 import { DIFFICULTIES, INITIAL_GAME_STATE, TOWERS } from "./config.js";
 import { createAudio } from "./audio.js";
-import { createTower, getCellFromPosition } from "./entities.js";
+import { createTower, getCellFromPosition, getTowerSaleValue } from "./entities.js";
 import { isInsideBoard, isPathCell } from "./map.js";
 import { createRenderer } from "./renderer.js";
 import { beginWave, updateGame } from "./simulation.js";
@@ -100,6 +100,7 @@ function selectTower(type) {
     throw new Error(`Unknown tower selected: ${type}`);
   }
   state.selectedTower = type;
+  state.selectedTowerId = null;
   ui.render(state);
 }
 
@@ -148,7 +149,7 @@ function placeTower(event) {
 function handleEffects(effects) {
   for (const effect of effects) {
     if (effect.type === "guardian-fired") {
-      audio.playCue(state, effect.type);
+      audio.playCue(state, `${effect.type}-${effect.towerType}`);
     } else if (effect.type === "wave-cleared") {
       showToast(`Wave ${effect.wave} cleared! +${effect.reward} gold`);
     } else if (effect.type === "wave-started") {
@@ -156,7 +157,7 @@ function handleEffects(effects) {
     } else if (effect.type === "wave-timeout") {
       showToast("The wave deadline has passed. The pass is lost.");
     } else if (effect.type === "enemy-defeated") {
-      audio.playCue(state, effect.type);
+      audio.playCue(state, `${effect.type}-${effect.enemyType}`);
     } else if (effect.type === "life-lost") {
       audio.playCue(state, effect.type);
     } else if (effect.type === "game-over") {
@@ -227,8 +228,12 @@ document.querySelector("#settings-speed").addEventListener("change", (event) => 
   ui.render(state);
 });
 ui.elements.inspector.addEventListener("click", (event) => {
-  if (!(event.target instanceof Element) || !event.target.closest("[data-upgrade-tower]")) return;
-  upgradeSelectedTower();
+  if (!(event.target instanceof Element)) return;
+  if (event.target.closest("[data-upgrade-tower]")) {
+    upgradeSelectedTower();
+  } else if (event.target.closest("[data-sell-tower]")) {
+    sellSelectedTower();
+  }
 });
 document.querySelector("#pause-button").addEventListener("click", () => {
   if (!state.started || state.gameOver) {
@@ -276,6 +281,18 @@ function upgradeSelectedTower() {
   audio.playCue(state, "guardian-upgraded");
   ui.render(state);
   showToast(`${definition.name} upgraded to level ${tower.level}!`);
+}
+
+function sellSelectedTower() {
+  const towerIndex = state.towers.findIndex((tower) => tower.id === state.selectedTowerId);
+  if (towerIndex === -1) return;
+
+  const [tower] = state.towers.splice(towerIndex, 1);
+  const refund = getTowerSaleValue(tower);
+  state.gold += refund;
+  state.selectedTowerId = null;
+  ui.render(state);
+  showToast(`${TOWERS[tower.type].name} sold for ${refund} gold.`);
 }
 
 ui.render(state);

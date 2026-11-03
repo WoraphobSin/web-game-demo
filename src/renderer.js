@@ -1,4 +1,5 @@
 import { BOARD, ENEMIES, PATH, TOWERS } from "./config.js";
+import { getTowerStats } from "./entities.js";
 import { isPathCell, PATH_CELLS } from "./map.js";
 
 export function createRenderer(canvas) {
@@ -78,17 +79,21 @@ export function createRenderer(canvas) {
       tower.row === Math.floor(state.pointer.y / BOARD.cellSize);
   }
 
+  function drawRange(x, y, radius, color) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = `${color}12`;
+    context.fill();
+    context.strokeStyle = `${color}55`;
+    context.setLineDash([5, 6]);
+    context.stroke();
+    context.setLineDash([]);
+  }
+
   function drawTower(state, tower, time) {
     const definition = TOWERS[tower.type];
     if (isHovered(state, tower) || state.selectedTowerId === tower.id) {
-      context.beginPath();
-      context.arc(tower.x, tower.y, definition.range, 0, Math.PI * 2);
-      context.fillStyle = `${definition.color}12`;
-      context.fill();
-      context.strokeStyle = `${definition.color}55`;
-      context.setLineDash([5, 6]);
-      context.stroke();
-      context.setLineDash([]);
+      drawRange(tower.x, tower.y, getTowerStats(tower).range, definition.color);
     }
 
     context.save();
@@ -177,6 +182,23 @@ export function createRenderer(canvas) {
 
   function draw(state, time) {
     drawBackground(time);
+    if (state.pointer && state.started && !state.gameOver) {
+      const column = Math.floor(state.pointer.x / BOARD.cellSize);
+      const row = Math.floor(state.pointer.y / BOARD.cellSize);
+      const occupied = state.towers.some((tower) => tower.column === column && tower.row === row);
+      if (
+        column >= 0 && column < BOARD.columns &&
+        row >= 0 && row < BOARD.rows &&
+        !occupied && !isPathCell(column, row)
+      ) {
+        const definition = TOWERS[state.selectedTower];
+        const position = {
+          x: column * BOARD.cellSize + BOARD.cellSize / 2,
+          y: row * BOARD.cellSize + BOARD.cellSize / 2
+        };
+        drawRange(position.x, position.y, getTowerStats({ type: state.selectedTower, level: 1 }).range, definition.color);
+      }
+    }
     for (const tower of state.towers) drawTower(state, tower, time);
     for (const enemy of state.enemies) drawEnemy(enemy);
 

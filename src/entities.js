@@ -35,6 +35,14 @@ export function getTowerStats(tower) {
   };
 }
 
+export function getTowerSaleValue(tower) {
+  const definition = TOWERS[tower.type];
+  const upgradeInvestment = definition.upgradeCosts
+    .slice(0, tower.level - 1)
+    .reduce((total, cost) => total + cost, 0);
+  return Math.floor((definition.cost + upgradeInvestment) / 2);
+}
+
 export function createEnemy(type, wave, difficulty = "medium") {
   const definition = ENEMIES[type];
   if (!definition) throw new Error(`Unknown enemy type: ${type}`);

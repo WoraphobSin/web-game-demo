@@ -1,5 +1,5 @@
 import { DIFFICULTIES, TOWERS } from "./config.js";
-import { getTowerStats } from "./entities.js";
+import { getTowerSaleValue, getTowerStats } from "./entities.js";
 
 export function createUi() {
   let selectedDifficulty = "medium";
@@ -181,6 +181,7 @@ export function createUi() {
     const nextLevelStats = placed && !isMaxLevel
       ? getTowerStats({ ...placed, level: placed.level + 1 })
       : undefined;
+    const saleValue = placed ? getTowerSaleValue(placed) : undefined;
     const area = stats.splashRadius ? `${stats.splashRadius}px radius` : "Single target";
     const heading = placed ? `${definition.name} · Level ${placed.level}` : `${definition.name} · Placement stats`;
     const upgradeButton = placed
@@ -188,6 +189,9 @@ export function createUi() {
         ? '<button class="secondary-button upgrade-button" type="button" disabled>Maximum level reached</button>'
         : `<button class="primary-button upgrade-button" type="button" data-upgrade-tower ${state.gold < nextCost ? "disabled" : ""}>Upgrade · ◉ ${nextCost} <span>→</span></button>`
       : '<p class="inspector-hint">Place a guardian, then select it on the battlefield to upgrade it.</p>';
+    const sellButton = placed
+      ? `<button class="secondary-button upgrade-button sell-button" type="button" data-sell-tower>Sell guardian · ◉ ${saleValue} gold</button>`
+      : "";
 
     const markup = `
       <div class="inspector-heading">
@@ -200,8 +204,9 @@ export function createUi() {
         <div><span>Attack area</span><strong>${area}</strong></div>
         <div><span>Range</span><strong>${stats.range}px</strong></div>
       </div>
-      ${nextLevelStats ? `<p class="upgrade-hint">Attack: ${stats.damage} → ${nextLevelStats.damage} · +5% range · 14% faster attacks${stats.splashRadius ? " · +10% area" : ""}</p>` : ""}
-      ${upgradeButton}`;
+      ${nextLevelStats ? `<p class="upgrade-hint">Damage: ${stats.damage} → ${nextLevelStats.damage} · Attack speed: ${(1 / stats.cooldown).toFixed(2)} → ${(1 / nextLevelStats.cooldown).toFixed(2)} / sec · Range: ${stats.range} → ${nextLevelStats.range}px${stats.splashRadius ? ` · Area: ${stats.splashRadius} → ${nextLevelStats.splashRadius}px` : ""}</p>` : ""}
+      ${upgradeButton}
+      ${sellButton}`;
     if (markup !== inspectorMarkup) {
       elements.inspector.innerHTML = markup;
       inspectorMarkup = markup;

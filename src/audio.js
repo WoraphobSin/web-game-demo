@@ -1,8 +1,13 @@
 const AUDIO_DIRECTORY = new URL("../assets/audio/", import.meta.url);
 const MUSIC_TRACK = new URL("battle-theme-a.mp3", AUDIO_DIRECTORY).href;
 const CUE_DEFINITIONS = {
-  "guardian-fired": { filePrefix: "guardian-shot", variations: 2, volume: 0.12 },
-  "enemy-defeated": { filePrefix: "impactPunch_medium", volume: 0.38 },
+  "guardian-fired-arrow": { filePrefix: "guardian-shot", variations: 2, volume: 0.12 },
+  "guardian-fired-mage": { filePrefix: "impactBell_heavy", volume: 0.2 },
+  "guardian-fired-stone": { filePrefix: "impactPunch_medium", volume: 0.17 },
+  "enemy-defeated-goblin": { filePrefix: "impactSoft_medium", volume: 0.38 },
+  "enemy-defeated-warg": { filePrefix: "impactSoft_heavy", volume: 0.4 },
+  "enemy-defeated-brute": { filePrefix: "impactPunch_medium", volume: 0.42 },
+  "enemy-defeated-boss": { filePrefix: "impactBell_heavy", volume: 0.46 },
   "guardian-upgraded": { filePrefix: "impactBell_heavy", volume: 0.42 },
   "life-lost": { filePrefix: "impactSoft_heavy", volume: 0.48 },
   "guardian-placed": { filePrefix: "impactSoft_medium", volume: 0.24 }
@@ -57,7 +62,7 @@ export function createAudio() {
 
     player.currentTime = 0;
     player.volume = definition.volume;
-    player.playbackRate = cue === "guardian-fired" ? state.speed : 1;
+    player.playbackRate = cue.startsWith("guardian-fired-") ? state.speed : 1;
     player.play().catch((error) => reportPlaybackError(error, cue));
   }
 
