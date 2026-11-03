@@ -15,14 +15,16 @@ export function createUi() {
     waveButton: document.querySelector("#wave-button"),
     enemyCount: document.querySelector("#enemy-count"),
     towerList: document.querySelector("#tower-list"),
-    selectionNote: document.querySelector("#selection-note"),
     overlay: document.querySelector("#arena-overlay"),
     soundButton: document.querySelector("#sound-toggle"),
     soundIcon: document.querySelector("#sound-icon"),
+    musicButton: document.querySelector("#music-toggle"),
+    musicIcon: document.querySelector("#music-icon"),
     speedButton: document.querySelector("#speed-button"),
     toast: document.querySelector("#toast"),
     pauseModal: document.querySelector("#pause-modal"),
     settingsSound: document.querySelector("#settings-sound"),
+    settingsMusic: document.querySelector("#settings-music"),
     settingsSpeed: document.querySelector("#settings-speed"),
     continueButton: document.querySelector("#continue-button"),
     difficultyOptions: document.querySelector("#difficulty-options"),
@@ -152,14 +154,16 @@ export function createUi() {
     for (const button of elements.towerList.querySelectorAll(".tower-card")) {
       button.classList.toggle("selected", button.dataset.tower === state.selectedTower);
     }
-    const selected = TOWERS[state.selectedTower];
-    elements.selectionNote.textContent = `${selected.name} selected to place — ${selected.cost} gold`;
     renderInspector(state);
-    elements.soundButton.setAttribute("aria-pressed", String(state.soundEnabled));
-    elements.soundIcon.textContent = state.soundEnabled ? "♫" : "♪";
-    elements.soundButton.lastChild.textContent = state.soundEnabled ? " Sound on" : " Sound off";
+    elements.soundButton.setAttribute("aria-pressed", String(state.soundEffectsEnabled));
+    elements.soundIcon.textContent = state.soundEffectsEnabled ? "♫" : "♪";
+    elements.soundButton.lastChild.textContent = state.soundEffectsEnabled ? " Effects on" : " Effects off";
+    elements.musicButton.setAttribute("aria-pressed", String(state.musicEnabled));
+    elements.musicIcon.textContent = state.musicEnabled ? "♫" : "♪";
+    elements.musicButton.lastChild.textContent = state.musicEnabled ? " Music on" : " Music off";
     elements.speedButton.innerHTML = state.speed === 2 ? "<span>»</span> Normal Speed" : "<span>»</span> Double Speed";
-    elements.settingsSound.checked = state.soundEnabled;
+    elements.settingsSound.checked = state.soundEffectsEnabled;
+    elements.settingsMusic.checked = state.musicEnabled;
     elements.settingsSpeed.checked = state.speed === 2;
     elements.continueButton.hidden = !state.started || state.gameOver;
     elements.pauseModal.hidden = !state.paused || state.gameOver;
@@ -174,6 +178,9 @@ export function createUi() {
     const stats = getTowerStats(tower);
     const nextCost = placed ? definition.upgradeCosts[placed.level - 1] : undefined;
     const isMaxLevel = placed && nextCost === undefined;
+    const nextLevelStats = placed && !isMaxLevel
+      ? getTowerStats({ ...placed, level: placed.level + 1 })
+      : undefined;
     const area = stats.splashRadius ? `${stats.splashRadius}px radius` : "Single target";
     const heading = placed ? `${definition.name} · Level ${placed.level}` : `${definition.name} · Placement stats`;
     const upgradeButton = placed
@@ -193,7 +200,7 @@ export function createUi() {
         <div><span>Attack area</span><strong>${area}</strong></div>
         <div><span>Range</span><strong>${stats.range}px</strong></div>
       </div>
-      ${placed ? `<p class="upgrade-hint">Next level: +35% damage · +5% range · 14% faster attacks${stats.splashRadius ? " · +10% area" : ""}</p>` : ""}
+      ${nextLevelStats ? `<p class="upgrade-hint">Attack: ${stats.damage} → ${nextLevelStats.damage} · +5% range · 14% faster attacks${stats.splashRadius ? " · +10% area" : ""}</p>` : ""}
       ${upgradeButton}`;
     if (markup !== inspectorMarkup) {
       elements.inspector.innerHTML = markup;

@@ -134,12 +134,11 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .panel-heading { display: flex; align-items: center; gap: 9px; padding: 14px 15px 11px; color: #d3d0c8; font-size: 10px; font-weight: 700; letter-spacing: .13em; }
 .rune { color: var(--gold); font-size: 14px; }
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; padding: 4px 14px 12px; gap: 13px 10px; }
-.war-table-panel { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(190px, .8fr); align-items: center; gap: 0 12px; margin-top: 10px; padding: 8px 13px; }
-.war-table-panel > .panel-heading { grid-column: 1 / -1; padding: 0 0 8px; }
-.war-table-panel .stats-grid { grid-column: 1; grid-row: 2; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 0; }
+.war-table-panel { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(190px, .8fr); align-items: center; gap: 0 12px; margin-top: 6px; padding: 5px 10px; }
+.war-table-panel .stats-grid { grid-column: 1; grid-row: 1; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 0; }
 .war-table-panel .stat { grid-template-columns: 19px minmax(0, 1fr); }
 .war-table-panel .stat-label { white-space: nowrap; }
-.war-table-panel .war-wave-meta { display: grid; grid-column: 2; grid-row: 2; grid-template-columns: 1fr 1fr; align-items: center; gap: 10px; }
+.war-table-panel .war-wave-meta { display: grid; grid-column: 2; grid-row: 1; grid-template-columns: 1fr 1fr; align-items: center; gap: 10px; }
 .war-table-panel .wave-row { min-width: 0; padding: 0; border-top: 0; }
 .war-table-panel .wave-row div:first-child { gap: 3px; }
 .war-table-panel .wave-progress { width: 52px; }
@@ -159,14 +158,10 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .deadline-row strong { color: var(--gold-bright); font-size: 14px; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .deadline-row strong.urgent { color: #f08a7b; animation: deadline-pulse .7s ease-in-out infinite alternate; }
 @keyframes deadline-pulse { to { text-shadow: 0 0 11px rgba(240, 138, 123, .7); } }
-.panel-hint { margin: -2px 15px 11px; color: #8f949e; font-size: 10px; line-height: 1.5; }
 .tower-list { display: grid; gap: 6px; padding: 0 9px; }
 .guardian-workshop { min-width: 0; margin: 0; padding: 10px; }
 .workshop-heading { display: flex; align-items: flex-start; flex-direction: column; justify-content: space-between; gap: 2px; }
 .workshop-heading .panel-heading { padding: 2px 0 7px; }
-.workshop-heading .panel-hint { margin: 0 0 6px; }
-.workshop-heading .selection-note { flex: 0 0 auto; padding: 5px 7px; border: 1px solid #343c48; border-radius: 4px; background: #1b222e; }
-.workshop-heading .selection-note { margin-bottom: 5px; }
 .workshop-content { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 9px; }
 .workshop-content .tower-list { grid-template-columns: 1fr; gap: 5px; padding: 0; }
 .workshop-content .tower-card { align-items: flex-start; min-height: 70px; padding: 8px; }
@@ -196,7 +191,6 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .tower-copy strong { font-size: 10px; font-weight: 600; }
 .tower-copy small { margin-top: 4px; color: #9298a1; font-size: 8px; }
 .tower-cost { color: var(--gold-bright); font-size: 9px; font-weight: 700; white-space: nowrap; }
-.selection-note { min-height: 32px; padding: 10px 14px; color: #b6a887; font-size: 9px; }
 .command-panel { padding-bottom: 12px; }
 .primary-button, .secondary-button { display: flex; align-items: center; justify-content: center; gap: 9px; width: calc(100% - 24px); min-height: 38px; margin: 1px 12px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700; transition: .15s ease; }
 .primary-button { border: 1px solid #c9a765; background: linear-gradient(120deg, #a6844f, #806743); color: #fff8e8; box-shadow: 0 4px 12px rgba(0, 0, 0, .18); }
@@ -209,7 +203,7 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .arena-column { min-width: 0; }
 .foes { color: #d99788; }
 .arena-frame { position: relative; overflow: hidden; border: 1px solid #3c4149; border-radius: 5px; background: #101923; box-shadow: 0 12px 36px rgba(0, 0, 0, .33); }
-#game-canvas { display: block; width: auto; height: min(47vh, 528px); max-width: 100%; margin: 0 auto; cursor: crosshair; }
+#game-canvas { display: block; width: auto; height: min(78vh, 576px); max-width: 100%; margin: 0 auto; cursor: crosshair; }
 .arena-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(8, 12, 19, .68); backdrop-filter: blur(2px); transition: opacity .35s ease, visibility .35s; }
 .arena-overlay.hidden { visibility: hidden; opacity: 0; pointer-events: none; }
 .overlay-card { width: min(390px, 85%); padding: 26px 30px 24px; border: 1px solid rgba(202, 169, 104, .5); border-radius: 5px; background: linear-gradient(145deg, rgba(25, 30, 39, .97), rgba(14, 19, 27, .98)); text-align: center; box-shadow: 0 16px 50px #06090dc9; }
@@ -256,7 +250,6 @@ h1 em { color: var(--gold-bright); font-style: normal; }
   .battle-layout { grid-template-columns: 1fr; }
   .guardian-workshop { padding: 10px; }
   .workshop-heading { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .workshop-heading .selection-note { margin-bottom: 10px; }
   .workshop-content { grid-template-columns: 1fr; }
   .workshop-content .tower-list { grid-template-columns: 1fr; }
   .workshop-content .tower-card { min-height: 84px; }
@@ -282,7 +275,6 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .setting-row strong, .guide-list strong { font-size: 14px; }
 .setting-row small, .difficulty-summary, .guide-list small { font-size: 12px; }
 .panel-heading { font-size: 12px; }
-.panel-hint { font-size: 12px; }
 .stat-label { font-size: 10px; }
 .stat strong { font-size: 17px; }
 .deadline-row { font-size: 10px; }
@@ -290,7 +282,7 @@ h1 em { color: var(--gold-bright); font-style: normal; }
 .tower-copy strong { font-size: 12px; }
 .tower-copy small { font-size: 10px; }
 .workshop-content .tower-card-stats { font-size: 11px; }
-.tower-cost, .selection-note { font-size: 11px; }
+.tower-cost { font-size: 11px; }
 .primary-button, .secondary-button { font-size: 12px; }
 .command-tip { font-size: 11px; }
 .arena-footer { font-size: 11px; }
@@ -318,7 +310,6 @@ h1 em { color: var(--gold-bright); font-style: normal; }
   .game-title .eyebrow { font-size: 9px; }
   .sound-toggle { font-size: 11px; }
   .panel-heading { font-size: 11px; }
-  .panel-hint { font-size: 11px; }
   .stat-label { font-size: 9px; }
   .deadline-row { font-size: 9px; }
   .tower-copy strong { font-size: 11px; }

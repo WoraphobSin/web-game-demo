@@ -1,0 +1,10 @@
+RPG Audio (1.0)
+
+Created and distributed by Kenney (www.kenney.nl)
+Creation date: 2014-03-17
+
+License: Creative Commons Zero (CC0)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+This content is free to use in personal, educational, and commercial projects.
+Attribution is optional; Kenney or www.kenney.nl may be credited.

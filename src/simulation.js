@@ -41,7 +41,7 @@ function updateParticles(state, deltaTime) {
   state.particles = state.particles.filter((particle) => particle.life > 0);
 }
 
-function fireTowers(state, deltaTime) {
+function fireTowers(state, deltaTime, effects) {
   for (const tower of state.towers) {
     const definition = getTowerStats(tower);
     tower.cooldownRemaining -= deltaTime;
@@ -56,6 +56,7 @@ function fireTowers(state, deltaTime) {
     state.projectiles.push(createProjectile(tower, target));
     tower.cooldownRemaining = definition.cooldown;
     tower.pulse = 0.15;
+    effects.push({ type: "guardian-fired" });
   }
 }
 
@@ -155,7 +156,7 @@ export function updateGame(state, deltaTime) {
     state.spawnClock = Math.max(0.44, 1.02 - state.wave * 0.025);
   }
 
-  fireTowers(state, scaledDelta);
+  fireTowers(state, scaledDelta, effects);
   moveEnemies(state, scaledDelta, effects);
   updateProjectiles(state, scaledDelta, effects);
   updateParticles(state, deltaTime);

@@ -1,9 +1,9 @@
 export const BOARD = {
   cellSize: 48,
   columns: 20,
-  rows: 11,
+  rows: 12,
   width: 960,
-  height: 528
+  height: 576
 };
 
 export const PATH = [
@@ -207,7 +207,8 @@ export const INITIAL_GAME_STATE = {
   selectedTowerId: null,
   elapsed: 0,
   speed: 1,
-  soundEnabled: false,
+  soundEffectsEnabled: false,
+  musicEnabled: false,
   started: false,
   running: false,
   gameOver: false,

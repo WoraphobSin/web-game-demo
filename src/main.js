@@ -40,7 +40,11 @@ function showToast(message) {
 }
 
 function resetGame(difficulty = selectedDifficulty) {
-  const settings = { soundEnabled: state.soundEnabled, speed: state.speed };
+  const settings = {
+    soundEffectsEnabled: state.soundEffectsEnabled,
+    musicEnabled: state.musicEnabled,
+    speed: state.speed
+  };
   Object.assign(state, structuredClone(INITIAL_GAME_STATE), settings, {
     difficulty,
     gold: DIFFICULTIES[difficulty].startingGold
@@ -57,7 +61,19 @@ function openSettings(returnScreen) {
 }
 
 function toggleSound() {
-  state.soundEnabled = !state.soundEnabled;
+  state.soundEffectsEnabled = !state.soundEffectsEnabled;
+  ui.render(state);
+}
+
+function toggleMusic() {
+  state.musicEnabled = !state.musicEnabled;
+  ui.render(state);
+  audio.syncMusic(state);
+}
+
+function resumeDefense() {
+  state.paused = false;
+  showScreen("game");
   ui.render(state);
   audio.syncMusic(state);
 }
@@ -131,7 +147,9 @@ function placeTower(event) {
 
 function handleEffects(effects) {
   for (const effect of effects) {
-    if (effect.type === "wave-cleared") {
+    if (effect.type === "guardian-fired") {
+      audio.playCue(state, effect.type);
+    } else if (effect.type === "wave-cleared") {
       showToast(`Wave ${effect.wave} cleared! +${effect.reward} gold`);
     } else if (effect.type === "wave-started") {
       showToast(`Wave ${effect.wave} begins!`);
@@ -170,6 +188,7 @@ ui.renderTowerOptions(selectTower);
 ui.elements.waveButton.addEventListener("click", startWave);
 ui.elements.overlay.querySelector("#start-button").addEventListener("click", startWave);
 ui.elements.soundButton.addEventListener("click", toggleSound);
+ui.elements.musicButton.addEventListener("click", toggleMusic);
 ui.elements.speedButton.addEventListener("click", () => {
   state.speed = state.speed === 1 ? 2 : 1;
   ui.render(state);
@@ -189,16 +208,17 @@ document.querySelector("#start-defense-button").addEventListener("click", () => 
   resetGame(selectedDifficulty);
   showScreen("game");
 });
-ui.elements.continueButton.addEventListener("click", () => {
-  state.paused = false;
-  showScreen("game");
-});
+ui.elements.continueButton.addEventListener("click", resumeDefense);
 document.querySelector("#settings-button").addEventListener("click", () => openSettings("menu"));
 document.querySelector("#how-to-button").addEventListener("click", () => showScreen("guide"));
 document.querySelector("#settings-back-button").addEventListener("click", () => showScreen(settingsReturnScreen));
 document.querySelector("#guide-back-button").addEventListener("click", () => showScreen("menu"));
 document.querySelector("#settings-sound").addEventListener("change", (event) => {
-  state.soundEnabled = event.currentTarget.checked;
+  state.soundEffectsEnabled = event.currentTarget.checked;
+  ui.render(state);
+});
+document.querySelector("#settings-music").addEventListener("change", (event) => {
+  state.musicEnabled = event.currentTarget.checked;
   ui.render(state);
   audio.syncMusic(state);
 });
@@ -219,8 +239,7 @@ document.querySelector("#pause-button").addEventListener("click", () => {
   ui.render(state);
 });
 document.querySelector("#resume-button").addEventListener("click", () => {
-  state.paused = false;
-  ui.render(state);
+  resumeDefense();
 });
 document.querySelector("#pause-settings-button").addEventListener("click", () => openSettings("game"));
 document.querySelector("#pause-menu-button").addEventListener("click", () => showScreen("menu"));

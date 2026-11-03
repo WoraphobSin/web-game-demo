@@ -1,14 +1,15 @@
 const AUDIO_DIRECTORY = new URL("../assets/audio/", import.meta.url);
 const MUSIC_TRACK = new URL("battle-theme-a.mp3", AUDIO_DIRECTORY).href;
 const CUE_DEFINITIONS = {
+  "guardian-fired": { filePrefix: "guardian-shot", variations: 2, volume: 0.12 },
   "enemy-defeated": { filePrefix: "impactPunch_medium", volume: 0.38 },
   "guardian-upgraded": { filePrefix: "impactBell_heavy", volume: 0.42 },
   "life-lost": { filePrefix: "impactSoft_heavy", volume: 0.48 },
   "guardian-placed": { filePrefix: "impactSoft_medium", volume: 0.24 }
 };
 
-function createCuePlayers(filePrefix) {
-  return Array.from({ length: 5 }, (_, index) => {
+function createCuePlayers(filePrefix, variations = 5) {
+  return Array.from({ length: variations }, (_, index) => {
     const filename = `${filePrefix}_${String(index).padStart(3, "0")}.ogg`;
     const player = new Audio(new URL(filename, AUDIO_DIRECTORY).href);
     player.preload = "auto";
@@ -25,7 +26,7 @@ export function createAudio() {
   const cuePlayers = Object.fromEntries(
     Object.entries(CUE_DEFINITIONS).map(([cue, definition]) => [
       cue,
-      { ...definition, players: createCuePlayers(definition.filePrefix), nextPlayer: 0 }
+      { ...definition, players: createCuePlayers(definition.filePrefix, definition.variations), nextPlayer: 0 }
     ])
   );
   let musicPlayRequest = 0;
@@ -38,7 +39,7 @@ export function createAudio() {
   }
 
   function playCue(state, cue) {
-    if (!state.soundEnabled) return;
+    if (!state.soundEffectsEnabled) return;
 
     const definition = cuePlayers[cue];
     if (!definition) throw new Error(`Unknown audio cue: ${cue}`);
@@ -56,11 +57,12 @@ export function createAudio() {
 
     player.currentTime = 0;
     player.volume = definition.volume;
+    player.playbackRate = cue === "guardian-fired" ? state.speed : 1;
     player.play().catch((error) => reportPlaybackError(error, cue));
   }
 
   function syncMusic(state) {
-    const shouldPlay = state.soundEnabled && state.started && !state.paused && !state.gameOver;
+    const shouldPlay = state.musicEnabled && state.started && !state.paused && !state.gameOver;
     if (!shouldPlay) {
       musicPlayRequest++;
       musicStarting = false;

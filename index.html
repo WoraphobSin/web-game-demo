@@ -84,8 +84,12 @@
         <h1 id="settings-title">Settings</h1>
         <p class="aux-description">Tune the battlefield to your liking.</p>
         <label class="setting-row" for="settings-sound">
-          <span><strong>Sound and music</strong><small>Atmospheric music and battle sounds</small></span>
+          <span><strong>Sound effects</strong><small>Guardian shots, upgrades, and battle sounds</small></span>
           <input id="settings-sound" type="checkbox">
+        </label>
+        <label class="setting-row" for="settings-music">
+          <span><strong>Background music</strong><small>Orchestral music during the defense</small></span>
+          <input id="settings-music" type="checkbox">
         </label>
         <label class="setting-row" for="settings-speed">
           <span><strong>Double game speed</strong><small>Move through waves at twice the pace</small></span>
@@ -125,7 +129,10 @@
         </div>
         <div class="game-header-actions">
           <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
-            <span id="sound-icon" aria-hidden="true">♫</span> Sound off
+            <span id="sound-icon" aria-hidden="true">♪</span> Effects off
+          </button>
+          <button class="sound-toggle" id="music-toggle" type="button" aria-pressed="false">
+            <span id="music-icon" aria-hidden="true">♪</span> Music off
           </button>
           <button class="primary-button header-control" id="wave-button" type="button"><span>▶</span> Begin Wave 1</button>
           <button class="sound-toggle" id="speed-button" type="button"><span>»</span> Double Speed</button>
@@ -133,8 +140,7 @@
         </div>
       </header>
 
-      <section class="panel war-table-panel" aria-label="War table">
-        <div class="panel-heading"><span class="rune">◈</span> WAR TABLE</div>
+      <section class="panel war-table-panel" aria-label="Battle status">
         <div class="stats-grid">
           <div class="stat"><span class="stat-icon heart">♥</span><span class="stat-label">LIVES</span><strong id="lives">20</strong></div>
           <div class="stat"><span class="stat-icon coin">◉</span><span class="stat-label">GOLD</span><strong id="gold">220</strong></div>
@@ -154,7 +160,7 @@
       <section class="battle-layout" aria-label="Tower defense game">
         <section class="arena-column">
           <div class="arena-frame">
-            <canvas id="game-canvas" width="960" height="528" aria-label="Game board. Select a guardian, then click an empty tile to place it."></canvas>
+            <canvas id="game-canvas" width="960" height="576" aria-label="Game board. Select a guardian, then click an empty tile to place it."></canvas>
             <div class="arena-overlay" id="arena-overlay">
               <div class="overlay-card">
                 <span class="overlay-rune">✦</span>
@@ -175,8 +181,7 @@
 
         <section class="guardian-workshop panel" aria-label="Guardian workshop">
           <div class="workshop-heading">
-            <div><div class="panel-heading"><span class="rune">⚒</span> GUARDIAN WORKSHOP</div><p class="panel-hint">Choose a guardian to place, or select one on the battlefield to upgrade it.</p></div>
-            <span class="selection-note" id="selection-note" aria-live="polite">Archer Shrine selected — 70 gold</span>
+            <div class="panel-heading"><span class="rune">⚒</span> GUARDIAN WORKSHOP</div>
           </div>
           <div class="workshop-content">
             <div class="tower-list" id="tower-list"></div>
@@ -190,7 +195,7 @@
           <h1 id="pause-title">Take a moment.</h1>
           <p class="aux-description">The battle is waiting for you.</p>
           <div class="aux-actions">
-            <button class="primary-button menu-button" id="resume-button" type="button">Resume defense</button>
+            <button class="primary-button menu-button" id="resume-button" type="button">Resume</button>
             <button class="secondary-button menu-button" id="pause-settings-button" type="button">Settings</button>
             <button class="text-button" id="pause-menu-button" type="button">Return to main menu</button>
           </div>
